@@ -1,2 +1,308 @@
-# the-interpolator
-Library for interpolating various stuff
+# The interpolator
+
+#### The only interpolator library you will ever need in node.js world
+
+## Overview
+This library was designed to interpolate variables, javascript code, and collection paths inside JSON files and/or Javascript objects.
+
+But with the time and increasing requirements grew into a full fledged interpolation library for any sort of templated string or templated file.
+
+Slowly, it evolved from being a hacky way of replacing a variable inside a string, to a more robust json interpolator and now a fully functional template engine.
+
+## Installation
+
+#### Via NPM
+TBC - Coming soon
+
+#### Via Yarn
+TBC - Coming soon
+
+## Parameters (Arguments)
+
+#### Summary
+
+- [template](#t-or-template) - what needs to be interpolated
+- [fileTemplate](#ft-or-filetemplate) - what needs to be interpolated but from a file
+- [asString](#as-or-asstring) - Treat everything as a string and don't try to parse anything
+- [data](#dt-or-data) - Variables/Functions and data in general that would be available in the template during interpolation
+- [fileData](#fdt-or-filedata) - Variables/Functions and data in general that would be available in the template during interpolation but from file
+- [interpolators](#i-or-interpolators) - If you want to overwrite the interpolators endings
+- [replaceWithUndefined](#rwu-or-replacewithundefined) - Behaviour I: Replaces with undefined if the interpolation is not processable
+- [replaceWithEmptyString](#rwes-or-replacewithemptystring) - Behaviour II: Replaces with an empty string ('') if the interpolation is not processable
+- [noProcessing](#np-or-noprocessing) - Behaviour III: Does not do anything if the interpolation is not processable
+- [returnOnlyResult](#ror-or-returnonlyresult) - Returns only the interpolation result
+- [silenceLogs](#sl-or-silencelogs) - Silence logging during runtime
+- [levels](#l-or-levels) - On what levels should the interpolations be processed (Only applies to collections)
+- [interpolationLevels](#il-or-interpolationlevels) - How many levels from max depth of each interpolation should go up and compute
+
+
+#### ```t``` or ```template``` 
+
+**Type: {Object|Array|String}**
+
+**Default: '' (empty string)**
+
+Most of the time this would a collection ({Array|Object}) but there are times when this would be called recursively without control and some other types would be passed. For instance if this is called on a string which came from a txt file the whole thing will be interpreted as a string.
+
+##### Observations
+
+- If this is a string
+    - And also is a JSON string, then this should be parsed and be treated as a collection
+    - if is not a JSON string, is should be just treated as a string
+
+#### ```ft``` or ```fileTemplate``` 
+
+**Type: {String}**
+
+**Default: '' (empty string)**
+
+This parameter will describe the file location on the machine that is running the code. Both relative and absolute paths are supported.
+
+##### Observations
+
+- If both "template" and "fileTemplate" are specified (not empty strings)
+    - The first priority will go to the fileTemplate, and if the file is found, the content of the file will be used
+    - If the file which is pointed at does not match any actual files on the machine, then what is specified under "template" parameter will be used
+
+- If it points to a ```.json``` or ```.js``` file
+    - If the json string found in ```.json``` file, this will be treated as a collection
+    - If the ````.js```` file exports an object, this will be treated as a collection 
+    - If none of the above applies, then the content of the files will be treated as strings as a fallback
+    
+- If it points to any other file extension than ```.json``` or ```.js``` file, the content of the file will be treated as a string
+
+#### ```as``` or ```asString``` 
+
+**Type: {Boolean}**
+
+**Default: false**
+
+This parameter, if set to true, no matter if a template is parsable or not, exported or not, it will be treated as a string. 
+
+#### ```dt``` or ```data```
+
+**Type: {Object|Array|Object[]}**
+
+**Default: {} (empty object)**
+
+This parameter is used for passing a collection to the template and to be able to access variables and various data inside the template. 
+
+Tip: you can also pass functions in the data which can be called inside the template.
+
+#### ```fdt``` or ```fileData``` 
+
+**Type: {String}**
+
+**Default: '' (empty string)**
+
+This parameter will describe the file location on the machine that is running the code. Both relative and absolute paths are supported.
+
+##### Observations
+
+- If both "data" and "fileData" are specified (not empty strings)
+    - The first priority will go to the fileData, and if the file is found, the content of the file will be used
+    - If the file which is pointed at does not match any actual files on the machine, then what is specified under "data" parameter will be used
+
+- If it points to a ```.json``` or ```.js``` file
+    - If the json string found in ```.json``` file, this will be treated as a collection
+    - If the ````.js```` file exports an object, this will be treated as a collection 
+    - If none of the above applies, then the content of the files will be treated as strings as a fallback
+    
+- If it points to any other file extension than ```.json``` or ```.js``` file, the content of the file will be treated as a string
+
+Tip: you can also pass functions in the data which can be called inside the template.
+
+#### ```i``` or ```interpolators``` 
+
+**Type: {String|Object[]}**
+
+**Default:**
+
+```javascript
+[
+    {prefix: '{{', suffix: '}}', type: 'print'},
+    {prefix: '+>', suffix: '<+', type: 'eval'},
+    {prefix: '#>', suffix: '<#', type: 'compute'}
+]
+```
+
+This parameter defines the interpolators types and their endings. If you want to use this interpolator in a file which is already managed by another interpolation library or templating engine, you can easily choose another endings that would not conflict the already existing syntax.
+
+##### Observations:
+
+If you pass it from the command line (CLI), you probably want to pass it as string. Make sure that the string is a JSON valid string to be parsable inside the code.
+
+#### ```rwu``` or ```replaceWithUndefined``` 
+
+**Type: {String|Boolean}**
+
+**Default: true**
+
+This parameter represents the default behaviour in cases where the print is not found, or the eval is not processable or the compute interpolation is not computable.
+
+Basically if this parameter is set to true, then by default when any interpolations fails, in the place of the interpolation, the library will put the string 'undefined'
+
+Also if any of the alternative behaviours is set to true, it will automatically superseed this one. For example, if 'replaceWithEmptyString' parameter is set to true but also 'replaceWithUndefined' is set to true, then 'replaceWithEmptyString' will superseed 'replaceWithUndefined'.
+
+Note: If you pass this parameter from command line (CLI), you can pass this as strings ('true' and 'false'). This will be automatically converted to boolean inside the code.
+
+Alternative behaviours:
+- replaceWithEmptyString
+- noProcessing
+
+#### ```rwes``` or ```replaceWithEmptyString``` 
+
+**Type: {String|Boolean}**
+
+**Default: false**
+
+This parameter represents one of the alternative behaviours in cases where the print is not found, or the eval is not processable or the compute interpolation is not computable.
+
+Basically if this parameter is set to true, then when any interpolations fails, the library will put an empty string in its place.
+
+Also if 'noProcessing' parameter is set to true, it will automatically superseed this one. For example, if 'noProcessing' parameter is set to true but also 'replaceWithEmptyString' is set to true, then 'noProcessing' will superseed 'replaceWithEmptyString'.
+
+Note: If you pass this parameter from command line (CLI), you can pass this as strings ('true' and 'false'). This will be automatically converted to boolean inside the code.
+
+Alternative behaviours:
+- replaceWithUndefined
+- noProcessing
+
+#### ```np``` or ```noProcessing``` 
+
+**Type: {String|Boolean}**
+
+**Default: false**
+
+This parameter represents one of the alternative behaviours in cases where the print is not found, or the eval is not processable or the compute interpolation is not computable.
+
+Basically if this parameter is set to true, then when any interpolations fails, the library will keep that interpolated string in place. Example: If we have the following string with interpolations "Lorem {{var1}} ipsum" and 'var1' is not defined, then after the interpolation, the string will look like: "Lorem {{var1}} ipsum", identical to its initial state.
+
+This behaviour, if is set to true, superseeds any other behaviour which happens to be set to true.
+
+Note: If you pass this parameter from command line (CLI), you can pass this as strings ('true' and 'false'). This will be automatically converted to boolean inside the code.
+
+Alternative behaviours:
+- replaceWithUndefined
+- replaceWithEmptyString
+
+#### ```ror``` or ```returnOnlyResult``` 
+
+**Type: {String|Boolean}**
+
+**Default: false**
+
+By default, the interpolate function returns an object like the following:
+
+```javascript
+{
+    result: "Lorem ipsum" // The result of the interpolation
+    logs: [ // An array of logs. If the method ran successfully, most often this will be an empty array. This holds both warnings and errors.
+        "Something fishy happened"
+    ]
+}
+```
+
+This parameter, if set to true, it will return only the result of the String|Collection interpolation without any logs or errors.
+
+Note: If you pass this parameter from command line (CLI), you can pass this as strings ('true' and 'false'). This will be automatically converted to boolean inside the code.
+
+Note: If you want to be completely oblivious of warnings, errors and logs in general you need to set both "returnOnlyResult" and "silenceLogs" to true or "true"
+
+#### ```sl``` or ```silenceLogs``` 
+
+**Type: {String|Boolean}**
+
+**Default: false**
+
+This parameter, if set to true, it will silence the console logs during runtime. Be aware that the logs will still be pushed in the logs array if 'returnOnlyResult' parameter is set to false.
+
+Note: If you pass this parameter from command line (CLI), you can pass this as strings ('true' and 'false'). This will be automatically converted to boolean inside the code.
+
+Note: If you want to be completely oblivious of warnings, errors and logs in general you need to set both "returnOnlyResult" and "silenceLogs" to true or "true"
+
+#### ```l``` or ```levels```
+
+**Type: {Number[]|String}**
+
+**Default: null (null value)**
+
+**Note: This applies only to collections**
+
+This parameter, if populated, defines to what levels of a collection the interpolation should apply. This is to be able to fine tune where the interpolations should apply. If is not specified (default value: null) will try to interpolate everything. 
+
+Note: Be aware, if you pass an empty array ([]) to this parameter, nothing will happen since it does't need to act on anything.
+
+##### Example:
+
+If you pass it as ```[0, 2]``` it will apply only to the root level of a collection and to level 2 items of the collection.
+
+##### Observations:
+
+If you pass it from the command line (CLI), you probably want to pass it as string. Make sure that the string is a JSON valid string to be parsable inside the code.
+
+#### ```il``` or ```interpolationLevels```
+
+**Type: {Number|String}**
+
+**Default: null (null value)**
+
+As a bit of background, the interpolator works backwards when it tries to compute/print and so on in terms of depth. It will go and find the deepest interpolation, try to interpolate and then go a level up one by one. 
+
+This parameter, if populated, defines how many levels up should it go. If is not specified (default value: null) will try to interpolate everything. 
+
+Note: Be aware, if you pass 0 (0 as number) or "0" (o as string), nothing will happen since it doesn't need to act on anything.
+
+##### Example:
+
+If you pass it as ```2``` and we have the following interpolated string ```Lorem {{var{{var{{var3}}}}}}``` and data looks like: ```{var1: 'ipsum', var2: 1, var3: 2}``` the output will be ```Lorem {{var1}}```
+
+##### Observations:
+
+If you pass it from the command line (CLI), you probably want to pass it as string.
+
+## What it returns?
+
+Based on what parameters you pass it returns either an object with 2 properties like the following:
+
+```javascript
+{
+    result: ''
+    logs: []
+}
+```
+
+Where 'result' property is actually the result of interpolation and 'logs' property is an array of strings which are pushed when something nefarious happens during runtime, either with '[WARNING]' or '[ERROR]' tag
+
+If you pass "returnOnlyResult" parameter as true, then it will output only the interpolation result without the logs.
+
+## Interpolators
+
+#### Summary
+
+- [Print - ```{{``` and ```}}```](#t-or-template) - what needs to be interpolated
+- [fileTemplate](#ft-or-filetemplate) - what needs to be interpolated but from a file
+- [asString](#as-or-asstring) - Treat everything as a string and don't try to parse anything
+
+#### **Print - ```{{``` and ```}}```**
+This interpolation will basically print the values of variables defined in different contexts. 
+If this is found inside a loop or an if statement or some block of code, it will first look to print the value of the local variable and then if not found go and try to find it in the global scope. 
+
+#### **Eval - ```+>``` and ```<+```**
+This will compute whatever is inside and output the result of the computations.
+
+##### Examples
+- ```+>1 + 1<+``` Will compute and output ```2```
+- ```+>"Hello world!".substring(1, 4)<+``` Will compute and output ```ell```
+
+#### **Compute - ```#>``` and ```<#```**
+This will compute whatever is inside.
+
+##### Examples
+TBC
+
+
+## Where did it come from?
+Proudly built with sweat and dedication in European Union (E.U) by
+- Robert Dumitrescu 
+- Ionut Vornicescu
