@@ -280,9 +280,7 @@ If you pass "returnOnlyResult" parameter as true, then it will output only the i
 
 #### Summary
 
-- [Print - ```{{``` and ```}}```](#t-or-template) - what needs to be interpolated
-- [fileTemplate](#ft-or-filetemplate) - what needs to be interpolated but from a file
-- [asString](#as-or-asstring) - Treat everything as a string and don't try to parse anything
+- [Print - ```{{``` and ```}}```](#print----and-) - what needs to be interpolated
 
 #### **Print - ```{{``` and ```}}```**
 This interpolation will basically print the values of variables defined in different contexts. 
@@ -301,6 +299,73 @@ This will compute whatever is inside.
 ##### Examples
 TBC
 
+## Usages
+
+#### Simple usage (printing a var inside a string)
+
+```javascript
+const Interpolator = require('the-interpolator');
+
+const options = {
+    template: 'Lorem {{var1}}',
+    data: {
+        var1: 'ipsum'
+    },
+    returnOnlyResult: true
+}
+
+let result = Interpolator.interpolate(options);
+
+console.log(result);
+
+// This will print: "Lorem ipsum"
+```
+
+#### Simple usage (printing an object var inside a string)
+
+Note: If we try to print an object or an array inside a string, that collection will be stringified in JSON.
+
+```javascript
+const Interpolator = require('the-interpolator');
+
+const options = {
+    template: 'Lorem {{var1}}',
+    data: {
+        var1: {bla: 123}
+    },
+    returnOnlyResult: true
+}
+
+let result = Interpolator.interpolate(options);
+
+console.log(result);
+
+// This will print: "Lorem "{"bla":123}""
+```
+
+#### Simple usage (printing an object var)
+
+Note: If we try to print an object or an array inside a string but the string has only the interpolation, the collection will be printed or assigned to the result as it is.
+
+```javascript
+const Interpolator = require('the-interpolator');
+
+const options = {
+    template: '{{var1}}',
+    data: {
+        var1: {bla: 123}
+    },
+    returnOnlyResult: true
+}
+
+let result = Interpolator.interpolate(options);
+
+console.log(result);
+
+// This will print: {bla: 123}
+```
+
+#### More examples coming soon.
 
 ## Where did it come from?
 Proudly built with sweat and dedication in European Union (E.U) by
