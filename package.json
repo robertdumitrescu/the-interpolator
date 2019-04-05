@@ -1,0 +1,51 @@
+{
+  "name": "the-interpolator",
+  "version": "1.0.0",
+  "description": "Library for running code and interpolating variables/methods/functions within strings. The only interpolator library you will ever need in javaScript.",
+  "main": "index.js",
+  "keywords": [
+    "template",
+    "template engine",
+    "engine",
+    "the interpolator",
+    "string interpolation",
+    "interpolation",
+    "interpolators",
+    "method interpolation"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Robert Dumitrescu",
+    "email": "robertdum01@gmail.com",
+    "url": "http://rdumitrescu.com"
+  },
+  "bugs": {
+    "url": "https://github.com/robertdumitrescu/the-interpolator/issues"
+  },
+  "homepage": "https://github.com/robertdumitrescu/the-interpolator#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robertdumitrescu/the-interpolator.git"
+  },
+  "contributors": [
+    {
+      "name": "Ionut Vornicescu",
+      "email": "",
+      "url": ""
+    }
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "~2.4.2",
+    "collection-path-helper": "~1.1.14",
+    "deepmerge": "^3.2.0",
+    "lodash": "~4.17.11"
+  },
+  "devDependencies": {
+    "chai": "~4.2.0",
+    "mocha": "~6.0.2",
+    "sinon": "~7.3.1"
+  }
+}

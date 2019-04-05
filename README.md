@@ -22,16 +22,19 @@ TBC - Coming soon
 #### Summary
 
 - [template](#t-or-template) - what needs to be interpolated
-- [fileTemplate](#ft-or-filetemplate) - what needs to be interpolated but from a file
+- [fileTemplate](#ft-or-filetemplate) - what needs to be interpolated but from a file **[NICE-TO-HAVE]**
 - [asString](#as-or-asstring) - Treat everything as a string and don't try to parse anything
 - [data](#dt-or-data) - Variables/Functions and data in general that would be available in the template during interpolation
-- [fileData](#fdt-or-filedata) - Variables/Functions and data in general that would be available in the template during interpolation but from file
+- [fileData](#fdt-or-filedata) - Variables/Functions and data in general that would be available in the template during interpolation but from file. **[NICE-TO-HAVE]**
 - [interpolators](#i-or-interpolators) - If you want to overwrite the interpolators endings
 - [replaceWithUndefined](#rwu-or-replacewithundefined) - Behaviour I: Replaces with undefined if the interpolation is not processable
 - [replaceWithEmptyString](#rwes-or-replacewithemptystring) - Behaviour II: Replaces with an empty string ('') if the interpolation is not processable
 - [noProcessing](#np-or-noprocessing) - Behaviour III: Does not do anything if the interpolation is not processable
 - [returnOnlyResult](#ror-or-returnonlyresult) - Returns only the interpolation result
 - [silenceLogs](#sl-or-silencelogs) - Silence logging during runtime
+- [noLogs](#sl-or-silencelogs) - If this is set to true, the logs array will remain empty - TBC
+- [noChanges](#sl-or-silencelogs) - If this is set to true, the changes array will remain empty - TBC
+- [filterOut](#sl-or-silencelogs) - An array with strings to be filtered out - TBC
 - [levels](#l-or-levels) - On what levels should the interpolations be processed (Only applies to collections)
 - [interpolationLevels](#il-or-interpolationlevels) - How many levels from max depth of each interpolation should go up and compute
 
@@ -56,6 +59,8 @@ Most of the time this would a collection ({Array|Object}) but there are times wh
 
 **Default: '' (empty string)**
 
+This is a **[NICE-TO-HAVE]** feature. Is not currently supported but it will be implemented in the future.
+
 This parameter will describe the file location on the machine that is running the code. Both relative and absolute paths are supported.
 
 ##### Observations
@@ -70,6 +75,8 @@ This parameter will describe the file location on the machine that is running th
     - If none of the above applies, then the content of the files will be treated as strings as a fallback
     
 - If it points to any other file extension than ```.json``` or ```.js``` file, the content of the file will be treated as a string
+
+- If this points to an actual file and everything is alright and it can be parsed and is a valid object/collection or string, the contents of the file will be attributed to the template argument by overwriting it (if is already defined)
 
 #### ```as``` or ```asString``` 
 
@@ -95,6 +102,8 @@ Tip: you can also pass functions in the data which can be called inside the temp
 
 **Default: '' (empty string)**
 
+This is a **[NICE-TO-HAVE]** feature. Is not currently supported but it will be implemented in the future.
+
 This parameter will describe the file location on the machine that is running the code. Both relative and absolute paths are supported.
 
 ##### Observations
@@ -110,6 +119,8 @@ This parameter will describe the file location on the machine that is running th
     
 - If it points to any other file extension than ```.json``` or ```.js``` file, the content of the file will be treated as a string
 
+- If this points to an actual file and everything is alright and it can be parsed and is a valid object/collection or string, the contents of the file will be attributed to the data argument by overwriting it (if is already defined)
+
 Tip: you can also pass functions in the data which can be called inside the template.
 
 #### ```i``` or ```interpolators``` 
@@ -120,13 +131,19 @@ Tip: you can also pass functions in the data which can be called inside the temp
 
 ```javascript
 [
-    {prefix: '{{', suffix: '}}', type: 'print'},
-    {prefix: '+>', suffix: '<+', type: 'eval'},
-    {prefix: '#>', suffix: '<#', type: 'compute'}
+    {p: '{{', s: '}}', t: 'print'},
+    {p: '+>', s: '<+', t: 'eval'},
+    {p: '#>', s: '<#', t: 'compute'}
 ]
 ```
 
 This parameter defines the interpolators types and their endings. If you want to use this interpolator in a file which is already managed by another interpolation library or templating engine, you can easily choose another endings that would not conflict the already existing syntax.
+
+Key definitions:
+
+- p - the prefix of the interpolation
+- s - the suffix of the interpolation
+- t - the type of the interpolation
 
 ##### Observations:
 
@@ -267,14 +284,18 @@ Based on what parameters you pass it returns either an object with 2 properties 
 
 ```javascript
 {
-    result: ''
-    logs: []
+    result: '',
+    logs: [],
+    changes: []
 }
 ```
 
-Where 'result' property is actually the result of interpolation and 'logs' property is an array of strings which are pushed when something nefarious happens during runtime, either with '[WARNING]' or '[ERROR]' tag
+Where:
+- 'result' property is actually the result of interpolation
+- 'logs' property is an array of strings which are pushed when something nefarious happens during runtime, either with '[NOTICE]', '[WARNING]' or '[ERROR]' tag
+- 'changes' property is an array of objects which describes what changes were made during the interpolation process. This is added for future developments, when you want to incrementally restore the template or to see different stages of the interpolations for debugging.
 
-If you pass "returnOnlyResult" parameter as true, then it will output only the interpolation result without the logs.
+If you pass "returnOnlyResult" parameter as true, then it will output only the interpolation result without the logs or changes.
 
 ## Interpolators
 
@@ -298,6 +319,34 @@ This will compute whatever is inside.
 
 ##### Examples
 TBC
+
+## Changes objects
+
+This is added for future developments, when you want to incrementally restore the template or to see different stages of the interpolations for debugging. Also is very useful for understanding what happens during interpolations.
+
+Along with the interpolated Collection|String and logs array, you will also receive an "changes" property which will be a populated or empty array based on the "noChanges" parameter value.
+
+The structure of a change object is something like that:
+
+```javascript
+{
+    op: 'replace',
+    bfVal: 'lorem',
+    afVal: 'ipsum'
+    TBC
+}
+```
+
+#### Properties description:
+
+- op - operation {String} - This property describes the operation performed on the string. Supported operations: [OBSOLETE]
+    - rpc - replace - When this operation is performed both bf(before) and af(after) needs to be populated [OBSOLETE]
+    - add - add - When this operation is performed bf will be always an empty string [OBSOLETE]
+idx - index {Number} - Where in the string the operation happened
+pt - path {String} - If this is applied on a collection, the current cursor when the change was applied needs to be copied under this property
+bf - before {String} - The value that was replaced
+af - after {String} - The new value which was put in place of the old value (bf(before))
+od - order {Number} - an auto-incremented id of the changes. This will be used to back-engineer the computed interpolation to the original template
 
 ## Usages
 
@@ -365,7 +414,129 @@ console.log(result);
 // This will print: {bla: 123}
 ```
 
+#### Simple usage (if | else-if | else statements)
+
+```javascript
+const Interpolator = require('the-interpolator');
+
+const template = `
+    +> if (var1 === 0) { <+
+        Variable 1 has the value: 0
+    +> } else if (var1 === 1) { <+
+        Variable 1 has the value: 1
+    +> } else { <+
+        Variable 1 does not have any known value
+    +> }<+
+`
+
+/** Case 1 */
+let options = {
+    template: template,
+    data: {var1: 0},
+    returnOnlyResult: true
+}
+
+let result = Interpolator.interpolate(options);
+console.log(result);
+// This will print: "Variable 1 has the value: 0"
+
+
+/** Case 2 */
+options = {
+    template: template,
+    data: {var1: 1},
+    returnOnlyResult: true
+}
+
+result = Interpolator.interpolate(options);
+console.log(result);
+// This will print: "Variable 1 has the value: 1"
+
+
+/** Default Case*/
+options = {
+    template: template,
+    data: {var1: 2},
+    returnOnlyResult: true
+}
+
+result = Interpolator.interpolate(options);
+console.log(result);
+// This will print: "Variable 1 does not have any known value"
+
+```
+
+#### Complex usage (nested for loops | while loops | if | if-else | else | compute interpolations)
+
+Note: If you defined variables inside the template, those will be stored as properties in an "locals" object.
+
+```javascript
+const Interpolator = require('the-interpolator');
+
+const template = `
++> for (let it1 = 0; it1 < x.length; it1++) { <+
+    +> for (let it2 = 0; it2 < x[it1].length; it2++) { <+
+        Iterator1 value: {{it1}} | Iterator2 value: {{it2}}
+        Sum of Iterators: +> {{it1}} + {{it2}} <+
+        Value printed once: {{x[it1][it2]}} | Value printed twice: {{x[it1][it2]}}
+        if (typeof property !== 'string') {
+            if (typeof property !== 'string') {
+                
+            }
+        }
+    +> } <+
++> } <+
+`
+
+/** Case 1 */
+let options = {
+    template: template,
+    data: {
+        x: [
+            [1, 2, 3],
+            ['lorem', 'ipsum', 'dolor']
+        ],
+    },
+    returnOnlyResult: true
+}
+
+let result = Interpolator.interpolate(options);
+console.log(result);
+// This will print: "Variable 1 has the value: 0"
+
+
+/** Case 2 */
+options = {
+    template: template,
+    data: {var1: 1},
+    returnOnlyResult: true
+}
+
+result = Interpolator.interpolate(options);
+console.log(result);
+// This will print: "Variable 1 has the value: 1"
+
+
+/** Default Case*/
+options = {
+    template: template,
+    data: {var1: 2},
+    returnOnlyResult: true
+}
+
+result = Interpolator.interpolate(options);
+console.log(result);
+// This will print: "Variable 1 does not have any known value"
+
+```
+
 #### More examples coming soon.
+
+## About this documentation
+Keep in mind that this documentations reflects the current version of the library and the direction towards this will go. 
+Certain features with the following tag "[NICE-TO-HAVE]" might be implemented in the future if they get enough support via GitHub issues.
+
+Certain features while developing the library might be obsoleted or deprecated. Those will have the tag "[OBSOLETE]"
 
 ## Where did it come from?
 Proudly built with sweat and dedication in European Union (E.U) by
