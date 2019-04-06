@@ -1,4 +1,4 @@
-# The interpolator
+# The interpolator - This library is in the design spec phase. CHeck out later for updates.
 
 #### The only interpolator library you will ever need in node.js world
 
@@ -307,14 +307,14 @@ If you pass "returnOnlyResult" parameter as true, then it will output only the i
 This interpolation will basically print the values of variables defined in different contexts. 
 If this is found inside a loop or an if statement or some block of code, it will first look to print the value of the local variable and then if not found go and try to find it in the global scope. 
 
-#### **Eval - ```+>``` and ```<+```**
+#### **Eval - ```+>``` and ```<+```** [MIGHT NOT BE NEEDED]
 This will compute whatever is inside and output the result of the computations.
 
 ##### Examples
 - ```+>1 + 1<+``` Will compute and output ```2```
 - ```+>"Hello world!".substring(1, 4)<+``` Will compute and output ```ell```
 
-#### **Compute - ```#>``` and ```<#```**
+#### **Compute - ```#>``` and ```<#```** [MIGHT NOT BE NEEDED]
 This will compute whatever is inside.
 
 ##### Examples
@@ -342,11 +342,13 @@ The structure of a change object is something like that:
 - op - operation {String} - This property describes the operation performed on the string. Supported operations: [OBSOLETE]
     - rpc - replace - When this operation is performed both bf(before) and af(after) needs to be populated [OBSOLETE]
     - add - add - When this operation is performed bf will be always an empty string [OBSOLETE]
-idx - index {Number} - Where in the string the operation happened
-pt - path {String} - If this is applied on a collection, the current cursor when the change was applied needs to be copied under this property
-bf - before {String} - The value that was replaced
-af - after {String} - The new value which was put in place of the old value (bf(before))
-od - order {Number} - an auto-incremented id of the changes. This will be used to back-engineer the computed interpolation to the original template
+- idx - index {Number} - Where in the string the operation happened
+- pt - path {String} - If this is applied on a collection, the current cursor when the change was applied needs to be copied under this property
+- bf - before {String} - The value that was replaced
+- af - after {String} - The new value which was put in place of the old value (bf(before))
+- od - order {Number} - an auto-incremented id of the changes. This will be used to back-engineer the computed interpolation to the original template
+- l  - level {Number} - at what level of nesting the change occured. For instance, the string replace in initialize will have always level 0 since we are modifying the strings or the strings within an object at their first level. On the other hand, for the following case: "lorem {{ip{{dolor}}sum}} sit"m when we want to replace the "{{dolor}}" with the variable value, the level will be 2.
+
 
 ## Usages
 
@@ -420,13 +422,13 @@ console.log(result);
 const Interpolator = require('the-interpolator');
 
 const template = `
-    +> if (var1 === 0) { <+
+    {{ if (var1 === 0) { }}
         Variable 1 has the value: 0
-    +> } else if (var1 === 1) { <+
+    {{ } else if (var1 === 1) { }}
         Variable 1 has the value: 1
-    +> } else { <+
+    {{ } else { }}
         Variable 1 does not have any known value
-    +> }<+
+    {{ } }}
 `
 
 /** Case 1 */
@@ -466,7 +468,7 @@ console.log(result);
 
 ```
 
-#### Complex usage (nested for loops | while loops | if | if-else | else | compute interpolations)
+#### Complex usage (nested for loops | if | if-else | compute interpolations)
 
 Note: If you defined variables inside the template, those will be stored as properties in an "locals" object.
 
@@ -474,60 +476,60 @@ Note: If you defined variables inside the template, those will be stored as prop
 const Interpolator = require('the-interpolator');
 
 const template = `
-+> for (let it1 = 0; it1 < x.length; it1++) { <+
-    +> for (let it2 = 0; it2 < x[it1].length; it2++) { <+
+{{ for (let it1 = 0; it1 < x.length; it1++) { }}
+    {{ for (let it2 = 0; it2 < x[it1].length; it2++) { }}
+    
         Iterator1 value: {{it1}} | Iterator2 value: {{it2}}
-        Sum of Iterators: +> {{it1}} + {{it2}} <+
+        Sum of Iterators: {{ it{{number1}} + it{{number2}} }}
         Value printed once: {{x[it1][it2]}} | Value printed twice: {{x[it1][it2]}}
-        if (typeof property !== 'string') {
-            if (typeof property !== 'string') {
-                
-            }
-        }
-    +> } <+
-+> } <+
+       {{ if (typeof property === 'string') { }}
+        This is a string: {{x[it1][it2]}}
+       {{ } else if (isFinite(property)) { }}
+        This is a number: {{x[it1][it2]}} and it can be added to itself: {{x[it{{number1}}][it{{number{{x.length}}}}] + x[it{{number1}}][it{{number2}}]}}
+       {{ } }}
+    {{ } }}
+{{ } }}
 `
 
-/** Case 1 */
 let options = {
     template: template,
     data: {
         x: [
-            [1, 2, 3],
-            ['lorem', 'ipsum', 'dolor']
+            [3, 4],
+            ['lorem', 'ipsum'],
         ],
+        number1: 1,
+        number2: 2
     },
     returnOnlyResult: true
 }
 
 let result = Interpolator.interpolate(options);
 console.log(result);
-// This will print: "Variable 1 has the value: 0"
 
 
-/** Case 2 */
-options = {
-    template: template,
-    data: {var1: 1},
-    returnOnlyResult: true
-}
+/* This will print something like: 
 
-result = Interpolator.interpolate(options);
-console.log(result);
-// This will print: "Variable 1 has the value: 1"
+Iterator1 value: 0 | Iterator2 value: 0
+Sum of Iterators: 0
+Value printed once: 3 | Value printed twice: 3
+This is a number: 3 and it can be added to itself: 6
 
+Iterator1 value: 0 | Iterator2 value: 1
+Sum of Iterators: 1
+Value printed once: 4 | Value printed twice: 4
+This is a number: 4 and it can be added to itself: 8
 
-/** Default Case*/
-options = {
-    template: template,
-    data: {var1: 2},
-    returnOnlyResult: true
-}
+Iterator1 value: 1 | Iterator2 value: 0
+Sum of Iterators: 1
+Value printed once: lorem | Value printed twice: lorem
+This is a string: lorem
 
-result = Interpolator.interpolate(options);
-console.log(result);
-// This will print: "Variable 1 does not have any known value"
-
+Iterator1 value: 1 | Iterator2 value: 1
+Sum of Iterators: 2
+Value printed once: ipsum | Value printed twice: ipsum
+This is a string: ipsum
+*/
 ```
 
 #### More examples coming soon.
