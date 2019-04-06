@@ -160,6 +160,7 @@ describe('Interpolator', () => {
                 },
                 transience: {
                     logs: [],
+                    changeOrder: -1,
                     changes: []
                 }
             };
