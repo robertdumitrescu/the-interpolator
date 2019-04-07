@@ -101,6 +101,21 @@ describe('Interpolator', () => {
         });
     });
 
+    describe('-> reverse', () => {
+        it('should reverse a simple string', async () => {
+            let initial = {
+                result: 'lorem ipsum    dolor sit amet',
+                changes: [
+                    {idx: 11, pt: '', bf: '   ', af: '', od: 0}
+                ]
+            };
+
+            let expected = 'lorem ipsum dolor sit amet';
+            let actual = Interpolator.reverse(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+    });
+
     describe('-> getCCAcronym', () => {
         it('should return an empty string when undefined is passed', async () => {
             let actual = Interpolator.getCCAcronym();

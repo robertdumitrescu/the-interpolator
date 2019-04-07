@@ -3,7 +3,7 @@
 const Lodash = require('lodash');
 const FileSystem = require('fs');
 const chalk = require('chalk');
-const PathHelper = require('../../pathHelper/src/path.Helper');
+const PathHelper = require('collection-path-helper');
 
 /**
  * @class Interpolator
@@ -27,6 +27,92 @@ class Interpolator {
      * @returns {Object}
      */
     static filterOut(options, transience) {
+        let defaultOptions = {
+            filterOut: [],
+            newValue: ''
+        };
+
+        options = {...defaultOptions, ...options};
+
+        if (typeof transience === 'undefined') {
+            transience = {
+                level: -1,
+                cursor: '',
+                changeOrder: -1,
+                changes: [],
+                filtered: options.template
+            };
+        }
+
+        if ((typeof transience.filtered === 'object' && transience.filtered !== null && Object.prototype.toString.call(transience.filtered) === '[object Object]')) {
+            /** Handling object data structures */
+            transience.level += 1;
+            for (let key in transience.filtered) {
+                transience.cursor = `${transience.cursor}.${key}`;
+                if (transience.cursor.charAt(0) === '.') { transience.cursor = transience.cursor.replace('.', ''); }
+
+                /** Recursively filtering out again on object data structures */
+                let result = Interpolator.filterOut(options, {...transience, filtered: transience.filtered[key]});
+
+                /** Re-mapping the result to the current transience object */
+                transience.filtered[key] = result.filtered;
+                transience.changeOrder = result.changeOrder;
+
+                transience.cursor = PathHelper.removePathLevels(transience.cursor);
+            }
+            transience.level -= 1;
+        } else if (Array.isArray(transience.filtered)) {
+            /** Handling arrays */
+            transience.level += 1;
+            for (let i = 0; i < transience.filtered.length; i++) {
+                transience.cursor = `${transience.cursor}[${i}]`;
+
+                /** Recursively filtering out again on array objects */
+                let result = Interpolator.filterOut(options, {...transience, filtered: transience.filtered[i]});
+
+                /** Re-mapping the result to the current transience object */
+                transience.filtered[i] = result.filtered;
+                transience.changeOrder = result.changeOrder;
+
+                transience.cursor = PathHelper.removePathLevels(transience.cursor);
+            }
+            transience.level -= 1;
+        } else if (typeof transience.filtered === 'string' || transience.filtered instanceof String) {
+            /** Handling strings directly. Here is where all the real processing is happening */
+            for (let i = 0; i < options.filterOut.length; i++) {
+                while (transience.filtered.indexOf(options.filterOut[i]) > -1) {
+                    let index = transience.filtered.indexOf(options.filterOut[i]);
+                    transience.filtered = transience.filtered.replace(options.filterOut[i], '');
+                    transience.changeOrder++;
+                    let change = {idx: index, pt: transience.cursor, bf: options.filterOut[i], af: options.newValue, od: transience.changeOrder};
+                    transience.changes.push(change);
+                }
+            }
+        }
+
+        if (transience.level === -1) {
+            delete transience.level;
+            delete transience.cursor;
+        }
+
+        return transience;
+    }
+
+    /**
+     * This takes as an input (argument) a string or a collection and then filters out according to an array certain strings and logs the filtering in a changes array
+     * Returns an object with "filtered" property and "changes" property
+     * @param {Object} options - Various options for reversing the result of a interpolation template, to the original template.
+     * @param {String|Array|Object} options.result - The result of the interpolation that needs to be reverted
+     * @param {Object[]} options.changes - An array of change objects (that needs to be applied on the result incrementally based on "od" to get the initial template)
+     * @param {Object=} transience - An object with transient properties collected during iteration
+     * @param {Object=} transience.filtered - The template after filtering
+     * @param {Number=} transience.level - This reflects the current level
+     * @param {String=} transience.cursor - This reflects the current cursor
+     * @param {Number=} transience.changeOrder - This reflects the order number of the last change
+     * @param {Object[]=} transience.changes - This is the array with the changes made on the template
+     * @returns {String|Array|Object}
+     */
+    static reverse(options, transience) {
         let defaultOptions = {
             filterOut: [],
             newValue: ''
