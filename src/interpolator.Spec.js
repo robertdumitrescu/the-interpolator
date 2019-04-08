@@ -104,14 +104,97 @@ describe('Interpolator', () => {
     describe('-> reverse', () => {
         it('should reverse a simple string', async () => {
             let initial = {
-                result: 'lorem ipsum    dolor sit amet',
+                result: 'lorem ipsum dolor sit amet',
                 changes: [
                     {idx: 11, pt: '', bf: '   ', af: '', od: 0}
                 ]
             };
 
-            let expected = 'lorem ipsum dolor sit amet';
+            let expected = 'lorem ipsum    dolor sit amet';
             let actual = Interpolator.reverse(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string with 3 level interpolation', async () => {
+            let initial = {
+                result: 'lorem ipsum dolor sit amet',
+                changes: [
+                    {idx: 18, pt: '', bf: '{{z}}', af: '3', od: 0},
+                    {idx: 15, pt: '', bf: '{{y3123}}', af: 'nx', od: 1},
+                    {idx: 12, pt: '', bf: '{{xnxabc}}', af: 'dolor', od: 2}
+                ]
+            };
+
+            let expected = 'lorem ipsum {{x{{y{{z}}123}}abc}} sit amet';
+            let actual = Interpolator.reverse(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+    });
+
+    describe('-> reverseChange', () => {
+        it('should reverse a simple string (replace with empty string)', async () => {
+            let initial = {
+                input: 'lorem ipsum dolor sit amet',
+                change: {idx: 11, pt: '', bf: '   ', af: '', od: 0}
+            };
+
+            let expected = 'lorem ipsum    dolor sit amet';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string (replace with another string)', async () => {
+            let initial = {
+                input: 'lorem ipsum Consecteur dolor sit amet',
+                change: {idx: 11, pt: '', bf: '   ', af: 'Consecteur ', od: 0}
+            };
+
+            let expected = 'lorem ipsum    dolor sit amet';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string (replace empty string with another string - start)', async () => {
+            let initial = {
+                input: 'bla lorem ipsum Consecteur dolor sit amet',
+                change: {idx: 0, pt: '', bf: '', af: 'bla ', od: 0}
+            };
+
+            let expected = 'lorem ipsum Consecteur dolor sit amet';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string (replace empty string with another string - end)', async () => {
+            let initial = {
+                input: 'lorem ipsum Consecteur dolor sit amet bla',
+                change: {idx: 37, pt: '', bf: '', af: 'bla ', od: 0}
+            };
+
+            let expected = 'lorem ipsum Consecteur dolor sit amet';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string (replace empty string with multiple strings - start, middle, end and change refers to middle)', async () => {
+            let initial = {
+                input: 'bla lorem ipsum bla dolor sit amet bla',
+                change: {idx: 16, pt: '', bf: '', af: 'bla ', od: 0}
+            };
+
+            let expected = 'bla lorem ipsum dolor sit amet bla';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string (multiline)', async () => {
+            let initial = {
+                input: `lorem ipsum\nConsecteur amet\nbla bla bla\ndolor sit amet`,
+                change: {idx: 11, pt: '', bf: `\n{{if (x === true) {}}\nConsecteur amet\nbla bla bla\n{{ } }}\n`, af: '\nConsecteur amet\nbla bla bla\n', od: 0}
+            };
+
+            let expected = 'lorem ipsum\n{{if (x === true) {}}\nConsecteur amet\nbla bla bla\n{{ } }}\ndolor sit amet';
+            let actual = Interpolator.reverseChange(initial);
             expect(actual).to.deep.equal(expected);
         });
     });
