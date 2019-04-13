@@ -221,9 +221,10 @@ class Interpolator {
             data: {},
             fileData: '',
             interpolators: [
-                {p: '#>', s: '<#', t: 'path'},
-                {p: '{{', s: '}}', t: 'var'},
-                {p: '+>', s: '<+', t: 'eval'}
+                // {p: '#>', s: '<#', t: 'path'},
+                // {p: '{{', s: '}}', t: 'var'},
+                // {p: '+>', s: '<+', t: 'eval'}
+                {p: '{{', s: '}}', t: 'code'}
             ],
             replaceWithUndefined: true,
             replaceWithEmptyString: false,
@@ -382,6 +383,10 @@ class Interpolator {
             let separators = Interpolator.getSeparators(options.interpolators);
             let tokens = Interpolator.getTokens(collection, separators);
             let parseTree = Interpolator.parseTokens(tokens);
+            let jsCode = Interpolator.createCode(parseTree, options);
+            console.log(jsCode);
+            console.log(eval(jsCode));
+            return;
             let result = Interpolator.evaluateTree(parseTree, options);
 
             return result;
@@ -602,6 +607,13 @@ class Interpolator {
             return evalResult;
         }
             break;
+        case 'code': {
+            console.log(node);return;
+            if (!node.hasJsCode) {
+
+            }
+        }
+            break;
         default: {
             let result = '';
             for (let i in node.value) {
@@ -660,6 +672,34 @@ class Interpolator {
 
 
         return val;
+    }
+
+    /**
+     * Check if the string has any JS key word to determine if is a pice of JS code
+     * 
+     * @param {string} code
+     * 
+     * @returns {boolean}
+     */
+    static checkIfHasJsCode(code) {
+        let jsKeyWords = ['abstract','arguments','await','boolean','break','byte','case','catch','char','class','const','continue','debugger','default','delete','do','double','else','enum','eval','export','extends','false','final','finally','float','for','function','goto','if','implements','import','in','instanceof','int','interface','let','long','native','new','null','package','private','protected','public','return','short','static','super','switch','synchronized','this','throw','throws','transient','true','try','typeof','var','void','volatile','while','with','yield','abstract','boolean','byte','char','double','final','float','goto','int','long','native','short','synchronized','throws','transient','volatile','Array','Date','eval','function','hasOwnProperty','Infinity','isFinite','isNaN','isPrototypeOf','length','Math','NaN','name','Number','Object','prototype','String','toString','undefined','valueOf','alert','all','anchor','anchors','area','assign','blur','button','checkbox','clearInterval','clearTimeout','clientInformation','close','closed','confirm','constructor','crypto','decodeURI','decodeURIComponent','defaultStatus','document','element','elements','embed','embeds','encodeURI','encodeURIComponent','escape','event','fileUpload','focus','form','forms','frame','innerHeight','innerWidth','layer','layers','link','location','mimeTypes','navigate','navigator','frames','frameRate','hidden','history','image','images','offscreenBuffering','open','opener','option','outerHeight','outerWidth','packages','pageXOffset','pageYOffset','parent','parseFloat','parseInt','password','pkcs11','plugin','prompt','propertyIsEnum','radio','reset','screenX','screenY','scroll','secure','select','self','setInterval','setTimeout','status','submit','taint','text','textarea','top','unescape','untaint','window'];
+        let jsOperators = ['\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\,', '\\;', '\\+', '\\-', '\\\\', '\\*', '\\\'', '\\"', '\='];
+        let jsKeyWordsToFind = [];
+
+        for (let keyWordIndex in jsKeyWords) {
+            jsKeyWordsToFind.push(jsKeyWords[keyWordIndex] + ' ');
+            jsKeyWordsToFind.push(jsKeyWords[keyWordIndex] + '\\(');
+            jsKeyWordsToFind.push(jsKeyWords[keyWordIndex] + '\\.');
+            jsKeyWordsToFind.push('\\.' + jsKeyWords[keyWordIndex]);
+        }
+
+        for (let jsOperatorIndex in jsOperators) {
+            jsKeyWordsToFind.push(jsOperators[jsOperatorIndex]);
+        }
+
+        let jsCodeChecker = new RegExp(jsKeyWordsToFind.join('|'), "gmi");
+
+        return jsCodeChecker.test(code);
     }
 
     /**
@@ -762,11 +802,79 @@ class Interpolator {
                 currentNode.value.push(newNode);
                 currentNode = newNode;
             } else {
+                if (currentNode.type == 'code') {
+                    let hasJsCode = false;
+
+                    for (let j in currentNode.value) {
+                        if (Interpolator.checkIfHasJsCode(currentNode.value[j].value)) {
+                            hasJsCode = true;
+                            break;
+                        }
+                    }
+
+                    currentNode.hasJsCode = hasJsCode;
+                }
                 currentNode = currentNode.parent;
             }
         }
 
         return rootNode;
+    }
+
+    /**
+     * Evaluate operations
+     * @param {Object} node
+     * @param {Object} options
+     * 
+     * @returns {string}
+     */
+    static createCode(node, options) {
+        let jsCode = '';
+        // console.log(node, options);
+
+        jsCode += Interpolator.createOutputFunction();
+        jsCode += Interpolator.getVarsFromData(options.data);
+
+        if (node.type == 'group') {
+            for (let i in node.value) {
+                // console.log(node.value[i]);
+                if (node.value[i].type == 'code') {
+                    if (node.value[i].hasJsCode && node.value[i].value.length == 1){
+                        jsCode += node.value[i].value[0].value;
+                    } else {
+                        jsCode += Interpolator.evaluateTree(node.value[i], options);
+                    }
+                } else {
+                    jsCode += '_writeIntoInterpolatorResultOutput(\`' + node.value[i].value + '\`);';
+                }
+            }
+        }
+
+        jsCode += 'interpolatorResultOutput;';
+
+        return jsCode;
+    }
+
+    /**
+     * Make JS code variables from data
+     * 
+     * @param {array} data 
+     * 
+     * @returns {string}
+     */
+    static getVarsFromData(data) {
+        let jsCode = '';
+
+        for (let i in data) {
+            jsCode += 'let ' + i + ' = ' + JSON.stringify(data[i]) + ";\n";
+        }
+
+        return jsCode;
+    }
+
+    static createOutputFunction() {
+        return `let interpolatorResultOutput = '';
+function _writeIntoInterpolatorResultOutput(string) { interpolatorResultOutput += string; }`;
     }
 
     /**
@@ -798,9 +906,10 @@ class Interpolator {
             template: '',
             fileTemplate: '',
             interpolators: [
-                {prefix: '#>', suffix: '<#', type: 'path'},
-                {prefix: '{{', suffix: '}}', type: 'var'},
-                {prefix: '+>', suffix: '<+', type: 'eval'}
+                // {prefix: '#>', suffix: '<#', type: 'path'},
+                // {prefix: '{{', suffix: '}}', type: 'var'},
+                // {prefix: '+>', suffix: '<+', type: 'eval'}
+                {prefix: '{{', suffix: '}}', type: 'code'}
             ],
             vars: [],
             context: {},
