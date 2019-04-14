@@ -23,7 +23,7 @@ describe('Interpolator', () => {
     
         Iterator1 value: {{it1}} | Iterator2 value: {{it2}}
         Sum of Iterators: {{ it{{number1}} + it{{number2}} }}
-        Value printed once: {{x[it1][it2]}} | Value printed twice: {{x[it1][it2]}}
+        Value printed once: {{x[it1][it2]}} | Value printed twice: {{x[it1][it2] + x[it1][it2]}}
        {{ if (typeof x[it1][it2] === 'string') { }}
         This is a string: {{x[it1][it2]}}
        {{ } else if (isFinite(x[it1][it2])) { }}
@@ -44,7 +44,45 @@ describe('Interpolator', () => {
                 },
                 returnOnlyResult: true
             }
-            let expected;
+            let expected = `
+
+    
+    
+        Iterator1 value: 0 | Iterator2 value: 0
+        Sum of Iterators: 0
+        Value printed once: 3 | Value printed twice: 6
+       
+        This is a number: 3 and it can be added to itself: 6
+       
+    
+    
+        Iterator1 value: 0 | Iterator2 value: 1
+        Sum of Iterators: 1
+        Value printed once: 4 | Value printed twice: 8
+       
+        This is a number: 4 and it can be added to itself: 8
+       
+    
+
+    
+    
+        Iterator1 value: 1 | Iterator2 value: 0
+        Sum of Iterators: 1
+        Value printed once: lorem | Value printed twice: loremlorem
+       
+        This is a string: lorem
+       
+    
+    
+        Iterator1 value: 1 | Iterator2 value: 1
+        Sum of Iterators: 2
+        Value printed once: ipsum | Value printed twice: ipsumipsum
+       
+        This is a string: ipsum
+       
+    
+
+`;
 
             let actual = Interpolator.interpolate(options);
             expect(actual).to.deep.equal(expected);

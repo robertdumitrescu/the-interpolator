@@ -384,10 +384,8 @@ class Interpolator {
             let tokens = Interpolator.getTokens(collection, separators);
             let parseTree = Interpolator.parseTokens(tokens);
             let jsCode = Interpolator.createCode(parseTree, options);
-            console.log(jsCode);
-            console.log(eval(jsCode));
-            return;
-            let result = Interpolator.evaluateTree(parseTree, options);
+
+            let result = eval(jsCode);
 
             return result;
         }
@@ -608,12 +606,30 @@ class Interpolator {
         }
             break;
         case 'code': {
-            console.log(node);return;
-            if (!node.hasJsCode) {
-
+            let jsCode = '';
+            let codeValue = '';
+            
+            for (let i in node.value) {
+                if (node.value[i].type == 'string') {
+                    let varValue = Interpolator.getVarValue(node.value[i].value, options.data, options);
+                    if (typeof varValue === 'undefined' || varValue === 'undefined') {
+                        varValue = node.value[i].value;
+                    }
+                    jsCode += varValue;
+                } else {
+                    jsCode += Interpolator.evaluateTree(node.value[i], options);
+                }
             }
+
+            codeValue = Interpolator.getVarValue(jsCode, options.data, options);
+            if (typeof codeValue === 'undefined' || codeValue === 'undefined') {
+                codeValue = jsCode;
+            }
+
+            return codeValue;
         }
             break;
+        case 'group':
         default: {
             let result = '';
             for (let i in node.value) {
@@ -682,15 +698,14 @@ class Interpolator {
      * @returns {boolean}
      */
     static checkIfHasJsCode(code) {
-        let jsKeyWords = ['abstract','arguments','await','boolean','break','byte','case','catch','char','class','const','continue','debugger','default','delete','do','double','else','enum','eval','export','extends','false','final','finally','float','for','function','goto','if','implements','import','in','instanceof','int','interface','let','long','native','new','null','package','private','protected','public','return','short','static','super','switch','synchronized','this','throw','throws','transient','true','try','typeof','var','void','volatile','while','with','yield','abstract','boolean','byte','char','double','final','float','goto','int','long','native','short','synchronized','throws','transient','volatile','Array','Date','eval','function','hasOwnProperty','Infinity','isFinite','isNaN','isPrototypeOf','length','Math','NaN','name','Number','Object','prototype','String','toString','undefined','valueOf','alert','all','anchor','anchors','area','assign','blur','button','checkbox','clearInterval','clearTimeout','clientInformation','close','closed','confirm','constructor','crypto','decodeURI','decodeURIComponent','defaultStatus','document','element','elements','embed','embeds','encodeURI','encodeURIComponent','escape','event','fileUpload','focus','form','forms','frame','innerHeight','innerWidth','layer','layers','link','location','mimeTypes','navigate','navigator','frames','frameRate','hidden','history','image','images','offscreenBuffering','open','opener','option','outerHeight','outerWidth','packages','pageXOffset','pageYOffset','parent','parseFloat','parseInt','password','pkcs11','plugin','prompt','propertyIsEnum','radio','reset','screenX','screenY','scroll','secure','select','self','setInterval','setTimeout','status','submit','taint','text','textarea','top','unescape','untaint','window'];
-        let jsOperators = ['\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\,', '\\;', '\\+', '\\-', '\\\\', '\\*', '\\\'', '\\"', '\='];
+        let jsKeyWords = ['abstract','arguments','await','boolean','break','byte','case','catch','char','class','const','continue','debugger','default','delete','do','double','else','enum','eval','export','extends','false','final','finally','float','for','function','goto','if','implements','import','in','instanceof','int','interface','let','long','native','new','null','package','private','protected','public','return','short','static','super','switch','synchronized','this','throw','throws','transient','true','try','typeof','var','void','volatile','while','with','yield','abstract','boolean','byte','char','double','final','float','goto','int','long','native','short','synchronized','throws','transient','volatile'];
+        let jsOperators = ['\\{', '\\}', '\\;', '\='];
         let jsKeyWordsToFind = [];
 
         for (let keyWordIndex in jsKeyWords) {
             jsKeyWordsToFind.push(jsKeyWords[keyWordIndex] + ' ');
             jsKeyWordsToFind.push(jsKeyWords[keyWordIndex] + '\\(');
             jsKeyWordsToFind.push(jsKeyWords[keyWordIndex] + '\\.');
-            jsKeyWordsToFind.push('\\.' + jsKeyWords[keyWordIndex]);
         }
 
         for (let jsOperatorIndex in jsOperators) {
@@ -830,19 +845,21 @@ class Interpolator {
      */
     static createCode(node, options) {
         let jsCode = '';
-        // console.log(node, options);
 
         jsCode += Interpolator.createOutputFunction();
         jsCode += Interpolator.getVarsFromData(options.data);
 
         if (node.type == 'group') {
             for (let i in node.value) {
-                // console.log(node.value[i]);
                 if (node.value[i].type == 'code') {
                     if (node.value[i].hasJsCode && node.value[i].value.length == 1){
                         jsCode += node.value[i].value[0].value;
                     } else {
-                        jsCode += Interpolator.evaluateTree(node.value[i], options);
+                        let evaluateCode = Interpolator.evaluateTree(node.value[i], options);
+                        if (!node.value[i].hasJsCode) {
+                            evaluateCode = '_writeIntoInterpolatorResultOutput(' + evaluateCode + ');';
+                        }
+                        jsCode += evaluateCode;
                     }
                 } else {
                     jsCode += '_writeIntoInterpolatorResultOutput(\`' + node.value[i].value + '\`);';
