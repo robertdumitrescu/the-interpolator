@@ -221,9 +221,6 @@ class Interpolator {
             data: {},
             fileData: '',
             interpolators: [
-                // {p: '#>', s: '<#', t: 'path'},
-                // {p: '{{', s: '}}', t: 'var'},
-                // {p: '+>', s: '<+', t: 'eval'}
                 {p: '{{', s: '}}', t: 'code'}
             ],
             replaceWithUndefined: true,
@@ -541,70 +538,6 @@ class Interpolator {
             return node.value;
         }
             break;
-        case 'path': {
-            let newNode = {
-                value: node.value,
-                type: 'group'
-            };
-            let path = Interpolator.evaluateTree(newNode, options);
-            let contextName = Interpolator.getPathContext(path);
-            let context = Interpolator.getContext(contextName, options.context);
-            path = Interpolator.removePathContext(path);
-            if (path) {
-                let retrievedContext = Interpolator.get(context, path);
-                if (typeof retrievedContext !== 'undefined') {
-                    return retrievedContext;
-                } if (typeof retrievedContext === 'undefined' && options.noProcessing === true) {
-                    /** @TODO Instead of doing this, we should save along with the node, the originalInterpolation string */
-                    return `#>${path}<#`;
-                }
-                return 'undefined';
-
-            }
-            if (node.siblingsCount === 1) {
-                return context;
-            }
-            return JSON.stringify(context);
-
-
-        }
-            break;
-        case 'var': {
-            let newNode = {
-                value: node.value,
-                type: 'group'
-            };
-            let varName = Interpolator.evaluateTree(newNode, options);
-            let varValue = Interpolator.getVarValue(varName, options.data, {noProcessing: options.noProcessing});
-            if (node.siblingsCount === 1) {
-                return varValue;
-            } if (Lodash.isArray(varValue) || Lodash.isObject(varValue)) {
-                return JSON.stringify(varValue);
-            }
-            return varValue;
-
-        }
-            break;
-        case 'eval': {
-            let newNode = {
-                value: node.value,
-                type: 'group'
-            };
-            let evalResult;
-            try {
-                evalResult = eval(Interpolator.evaluateTree(newNode, options));
-            } catch (e) {
-                if (options.noProcessing === true) {
-                    /** @TODO Instead of doing this, we should save along with the node, the originalInterpolation string */
-                    evalResult = `+>${node.value[0].value}<+`;
-                } else {
-                    evalResult = 'undefined';
-                }
-            }
-
-            return evalResult;
-        }
-            break;
         case 'code': {
             let jsCode = '';
             let codeValue = '';
@@ -641,11 +574,6 @@ class Interpolator {
                     return evaluateValue;
                 }
 
-                if (!Lodash.isString(evaluateValue) && node.value[i].type === 'path') {
-                    // return evaluateValue;
-                } else if (!Lodash.isString(evaluateValue) && node.value[i].type === 'var' && node.value[i].siblingsCount === 1) {
-                    return evaluateValue;
-                }
                 result += evaluateValue;
 
             }
@@ -917,15 +845,10 @@ function _writeIntoInterpolatorResultOutput(string) { interpolatorResultOutput +
      * @return {Object|Array|String}
      */
     static interpolate(options) {
-
-
         let defaultOptions = {
             template: '',
             fileTemplate: '',
             interpolators: [
-                // {prefix: '#>', suffix: '<#', type: 'path'},
-                // {prefix: '{{', suffix: '}}', type: 'var'},
-                // {prefix: '+>', suffix: '<+', type: 'eval'}
                 {prefix: '{{', suffix: '}}', type: 'code'}
             ],
             vars: [],
