@@ -89,780 +89,778 @@ describe('Interpolator', () => {
         });
     })
 
-    // describe('-> filterOut', () => {
-    //     it('should return the property as it is if is undefined', async () => {
-    //         let initial = {
-    //             template: undefined,
-    //             filterOut: []
-    //         };
-
-    //         let expected = {
-    //             filtered: undefined,
-    //             changes: [],
-    //             changeOrder: -1
-    //         };
-    //         let actual = Interpolator.filterOut(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the property filtered out when is a string', async () => {
-    //         let initial = {
-    //             template: 'lorem ipsum    dolor sit amet',
-    //             filterOut: ['   ']
-    //         };
-
-    //         let expected = {
-    //             filtered: 'lorem ipsum dolor sit amet',
-    //             changes: [
-    //                 {idx: 11, pt: '', bf: '   ', af: '', od: 0}
-    //             ],
-    //             changeOrder: 0
-    //         };
-    //         let actual = Interpolator.filterOut(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the property filtered out when is an simple object', async () => {
-    //         let initial = {
-    //             template: {prop1: 'lorem ipsum    dolor sit amet', prop2: 5},
-    //             filterOut: ['   ']
-    //         };
-
-    //         let expected = {
-    //             filtered: {prop1: 'lorem ipsum dolor sit amet', prop2: 5},
-    //             changes: [
-    //                 {idx: 11, pt: 'prop1', bf: '   ', af: '', od: 0}
-    //             ],
-    //             changeOrder: 0
-    //         };
-    //         let actual = Interpolator.filterOut(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the property filtered out when is an simple array', async () => {
-    //         let initial = {
-    //             template: ['lorem ipsum    dolor sit amet', 5],
-    //             filterOut: ['   ']
-    //         };
-
-    //         let expected = {
-    //             filtered: ['lorem ipsum dolor sit amet', 5],
-    //             changes: [
-    //                 {idx: 11, pt: '[0]', bf: '   ', af: '', od: 0}
-    //             ],
-    //             changeOrder: 0
-    //         };
-    //         let actual = Interpolator.filterOut(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the property filtered out when is an simple array (3 elements)', async () => {
-    //         let initial = {
-    //             template: ['   lorem ipsum    dolor sit amet', 5, 'lorem ipsum dolor    sit amet   '],
-    //             filterOut: ['   ']
-    //         };
-
-    //         let expected = {
-    //             filtered: ['lorem ipsum dolor sit amet', 5, 'lorem ipsum dolor sit amet'],
-    //             changes: [
-    //                 {idx: 0, pt: '[0]', bf: '   ', af: '', od: 0},
-    //                 {idx: 11, pt: '[0]', bf: '   ', af: '', od: 1},
-    //                 {idx: 17, pt: '[2]', bf: '   ', af: '', od: 2},
-    //                 {idx: 26, pt: '[2]', bf: '   ', af: '', od: 3}
-    //             ],
-    //             changeOrder: 3
-    //         };
-    //         let actual = Interpolator.filterOut(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-    // });
-
-    // describe('-> reverse', () => {
-    //     it('should reverse a simple string', async () => {
-    //         let initial = {
-    //             result: 'lorem ipsum dolor sit amet',
-    //             changes: [
-    //                 {idx: 11, pt: '', bf: '   ', af: '', od: 0}
-    //             ]
-    //         };
-
-    //         let expected = 'lorem ipsum    dolor sit amet';
-    //         let actual = Interpolator.reverse(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should reverse a simple string with 3 level interpolation', async () => {
-    //         let initial = {
-    //             result: 'lorem ipsum dolor sit amet',
-    //             changes: [
-    //                 {idx: 18, pt: '', bf: '{{z}}', af: '3', od: 0},
-    //                 {idx: 15, pt: '', bf: '{{y3123}}', af: 'nx', od: 1},
-    //                 {idx: 12, pt: '', bf: '{{xnxabc}}', af: 'dolor', od: 2}
-    //             ]
-    //         };
-
-    //         let expected = 'lorem ipsum {{x{{y{{z}}123}}abc}} sit amet';
-    //         let actual = Interpolator.reverse(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-    // });
-
-    // describe('-> reverseChange', () => {
-    //     it('should reverse a simple string (replace with empty string)', async () => {
-    //         let initial = {
-    //             input: 'lorem ipsum dolor sit amet',
-    //             change: {idx: 11, pt: '', bf: '   ', af: '', od: 0}
-    //         };
-
-    //         let expected = 'lorem ipsum    dolor sit amet';
-    //         let actual = Interpolator.reverseChange(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should reverse a simple string (replace with another string)', async () => {
-    //         let initial = {
-    //             input: 'lorem ipsum Consecteur dolor sit amet',
-    //             change: {idx: 11, pt: '', bf: '   ', af: 'Consecteur ', od: 0}
-    //         };
-
-    //         let expected = 'lorem ipsum    dolor sit amet';
-    //         let actual = Interpolator.reverseChange(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should reverse a simple string (replace empty string with another string - start)', async () => {
-    //         let initial = {
-    //             input: 'bla lorem ipsum Consecteur dolor sit amet',
-    //             change: {idx: 0, pt: '', bf: '', af: 'bla ', od: 0}
-    //         };
-
-    //         let expected = 'lorem ipsum Consecteur dolor sit amet';
-    //         let actual = Interpolator.reverseChange(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should reverse a simple string (replace empty string with another string - end)', async () => {
-    //         let initial = {
-    //             input: 'lorem ipsum Consecteur dolor sit amet bla',
-    //             change: {idx: 37, pt: '', bf: '', af: 'bla ', od: 0}
-    //         };
-
-    //         let expected = 'lorem ipsum Consecteur dolor sit amet';
-    //         let actual = Interpolator.reverseChange(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should reverse a simple string (replace empty string with multiple strings - start, middle, end and change refers to middle)', async () => {
-    //         let initial = {
-    //             input: 'bla lorem ipsum bla dolor sit amet bla',
-    //             change: {idx: 16, pt: '', bf: '', af: 'bla ', od: 0}
-    //         };
-
-    //         let expected = 'bla lorem ipsum dolor sit amet bla';
-    //         let actual = Interpolator.reverseChange(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should reverse a simple string (multiline)', async () => {
-    //         let initial = {
-    //             input: `lorem ipsum\nConsecteur amet\nbla bla bla\ndolor sit amet`,
-    //             change: {idx: 11, pt: '', bf: `\n{{if (x === true) {}}\nConsecteur amet\nbla bla bla\n{{ } }}\n`, af: '\nConsecteur amet\nbla bla bla\n', od: 0}
-    //         };
-
-    //         let expected = 'lorem ipsum\n{{if (x === true) {}}\nConsecteur amet\nbla bla bla\n{{ } }}\ndolor sit amet';
-    //         let actual = Interpolator.reverseChange(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-    // });
-
-    // describe('-> getCCAcronym', () => {
-    //     it('should return an empty string when undefined is passed', async () => {
-    //         let actual = Interpolator.getCCAcronym();
-    //         expect(actual).to.deep.equal('');
-    //     });
-
-    //     it('should return an empty string when empty string is passed', async () => {
-    //         let actual = Interpolator.getCCAcronym('');
-    //         expect(actual).to.deep.equal('');
-    //     });
-
-    //     it('should return just the first letter when a simple word is passed', async () => {
-    //         let actual = Interpolator.getCCAcronym('word');
-    //         expect(actual).to.deep.equal('w');
-    //     });
-
-    //     it('should return an acronym from an camel case string (1)', async () => {
-    //         let actual = Interpolator.getCCAcronym('replaceWithEmptyString');
-    //         expect(actual).to.deep.equal('rwes');
-    //     });
-
-    //     it('should return an acronym from an camel case string (2)', async () => {
-    //         let actual = Interpolator.getCCAcronym('interpolationLevels');
-    //         expect(actual).to.deep.equal('il');
-    //     });
-
-    //     it('should return an acronym from an camel case string (3)', async () => {
-    //         let actual = Interpolator.getCCAcronym('returnOnlyResult');
-    //         expect(actual).to.deep.equal('ror');
-    //     });
-    // });
-
-    // describe('-> initialize', () => {
-    //     beforeEach(() => {
-    //         this.defaultExpected = {
-    //             options: {
-    //                 template: '',
-    //                 fileTemplate: '',
-    //                 asString: false,
-    //                 data: {},
-    //                 fileData: '',
-    //                 interpolators: [
-    //                     {p: '#>', s: '<#', t: 'path'},
-    //                     {p: '{{', s: '}}', t: 'var'},
-    //                     {p: '+>', s: '<+', t: 'eval'}
-    //                 ],
-    //                 replaceWithUndefined: true,
-    //                 replaceWithEmptyString: false,
-    //                 noProcessing: false,
-    //                 returnOnlyResult: false,
-    //                 silenceLogs: false,
-    //                 noLogs: false,
-    //                 noChanges: false,
-    //                 filterOut: [],
-    //                 levels: null,
-    //                 interpolationLevels: null
-    //             },
-    //             transience: {
-    //                 logs: [],
-    //                 changeOrder: -1,
-    //                 changes: []
-    //             }
-    //         };
-
-    //         this.defaultLogs = [
-    //             '[NOTICE] Starting with the following options:',
-    //             '[NOTICE] template(t): ""',
-    //             '[NOTICE] fileTemplate(ft): ""',
-    //             '[NOTICE] asString(as): false',
-    //             '[NOTICE] data(d): {}',
-    //             '[NOTICE] fileData(fd): ""',
-    //             '[NOTICE] interpolators(i): [{"p":"#>","s":"<#","t":"path"},{"p":"{{","s":"}}","t":"var"},{"p":"+>","s":"<+","t":"eval"}]',
-    //             '[NOTICE] replaceWithUndefined(rwu): true',
-    //             '[NOTICE] replaceWithEmptyString(rwes): false',
-    //             '[NOTICE] noProcessing(np): false',
-    //             '[NOTICE] returnOnlyResult(ror): false',
-    //             '[NOTICE] silenceLogs(sl): false',
-    //             '[NOTICE] noLogs(nl): false',
-    //             '[NOTICE] noChanges(nc): false',
-    //             '[NOTICE] filterOut(fo): []',
-    //             '[NOTICE] levels(l): null',
-    //             '[NOTICE] interpolationLevels(il): null'
-    //         ];
-
-    //         /** Stubbing console.log */
-    //         this.consoleLogStub = sinon.spy(console, 'log');
-
-    //         /** Stubbing dirname */
-    //         this.pathDirnameStub = sinon.stub(path, 'dirname');
-    //         this.pathDirnameStub.returns('');
-    //     });
-    //     it('should log a warning message and return defaults if options is undefined', async () => {
-
-    //         let expected = {
-    //             options: {},
-    //             transience: {
-    //                 logs: [
-    //                     '[WARNING] The options argument was invalid. Therefore, defaultOptions will be used.',
-    //                     ...this.defaultLogs
-    //                 ]
-    //             }
-    //         };
-
-    //         expected = DeepMerge(this.defaultExpected, expected);
-
-    //         let actual = Interpolator.initialize();
-
-    //         expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
-    //         expect(actual).to.deep.equal(expected);
-
-    //     });
-
-    //     it('should log a warning message and return defaults if options is null', async () => {
-
-    //         let expected = {
-    //             options: {},
-    //             transience: {
-    //                 logs: [
-    //                     '[WARNING] The options argument was invalid. Therefore, defaultOptions will be used.',
-    //                     ...this.defaultLogs
-    //                 ]
-    //             }
-    //         };
-
-    //         expected = DeepMerge(this.defaultExpected, expected);
-
-    //         let actual = Interpolator.initialize();
-
-    //         expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
-    //         expect(actual).to.deep.equal(expected);
-
-    //     });
-
-    //     it('should not log any warning messages and return defaults if options is empty object', async () => {
-
-    //         let expected = {
-    //             options: {},
-    //             transience: {
-    //                 logs: [
-    //                     ...this.defaultLogs
-    //                 ]
-    //             }
-    //         };
-
-    //         expected = DeepMerge(this.defaultExpected, expected);
-
-    //         let actual = Interpolator.initialize({});
-
-    //         expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
-    //         expect(actual).to.deep.equal(expected);
-
-    //     });
-
-    //     it('should log a warning message if both template and t arguments are defined', async () => {
-
-    //         let initial = {
-    //             template: 'Interpolate me! {{}}',
-    //             t: 'Interpolate me2! {{}}',
-    //         };
-
-    //         let expected = {
-    //             options: {
-    //                 template: 'Interpolate me! {{}}',
-    //             },
-    //             transience: {
-    //                 logs: [
-    //                     '[WARNING] Both options.t and options.template are defined. Using options.template: "Interpolate me! {{}}"',
-    //                     '[NOTICE] Starting with the following options:',
-    //                     '[NOTICE] template(t): "Interpolate me! {{}}"',
-    //                     '[NOTICE] fileTemplate(ft): ""',
-    //                     '[NOTICE] asString(as): false',
-    //                     '[NOTICE] data(d): {}',
-    //                     '[NOTICE] fileData(fd): ""',
-    //                     '[NOTICE] interpolators(i): [{"p":"#>","s":"<#","t":"path"},{"p":"{{","s":"}}","t":"var"},{"p":"+>","s":"<+","t":"eval"}]',
-    //                     '[NOTICE] replaceWithUndefined(rwu): true',
-    //                     '[NOTICE] replaceWithEmptyString(rwes): false',
-    //                     '[NOTICE] noProcessing(np): false',
-    //                     '[NOTICE] returnOnlyResult(ror): false',
-    //                     '[NOTICE] silenceLogs(sl): false',
-    //                     '[NOTICE] noLogs(nl): false',
-    //                     '[NOTICE] noChanges(nc): false',
-    //                     '[NOTICE] filterOut(fo): []',
-    //                     '[NOTICE] levels(l): null',
-    //                     '[NOTICE] interpolationLevels(il): null'
-    //                 ]
-    //             }
-    //         };
-
-    //         expected = DeepMerge(this.defaultExpected, expected);
-
-    //         let actual = Interpolator.initialize(initial);
-
-    //         expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
-    //         expect(actual).to.deep.equal(expected);
-
-    //     });
-
-    //     it('should not log any warning message if options.t is defined', async () => {
-
-    //         let initial = {
-    //             t: 'Interpolate me2! {{}}',
-    //         };
-
-    //         let expected = {
-    //             options: {
-    //                 template: 'Interpolate me2! {{}}',
-    //             },
-    //             transience: {
-    //                 logs: [
-    //                     '[NOTICE] Starting with the following options:',
-    //                     '[NOTICE] template(t): "Interpolate me2! {{}}"',
-    //                     '[NOTICE] fileTemplate(ft): ""',
-    //                     '[NOTICE] asString(as): false',
-    //                     '[NOTICE] data(d): {}',
-    //                     '[NOTICE] fileData(fd): ""',
-    //                     '[NOTICE] interpolators(i): [{"p":"#>","s":"<#","t":"path"},{"p":"{{","s":"}}","t":"var"},{"p":"+>","s":"<+","t":"eval"}]',
-    //                     '[NOTICE] replaceWithUndefined(rwu): true',
-    //                     '[NOTICE] replaceWithEmptyString(rwes): false',
-    //                     '[NOTICE] noProcessing(np): false',
-    //                     '[NOTICE] returnOnlyResult(ror): false',
-    //                     '[NOTICE] silenceLogs(sl): false',
-    //                     '[NOTICE] noLogs(nl): false',
-    //                     '[NOTICE] noChanges(nc): false',
-    //                     '[NOTICE] filterOut(fo): []',
-    //                     '[NOTICE] levels(l): null',
-    //                     '[NOTICE] interpolationLevels(il): null'
-    //                 ]
-    //             }
-    //         };
-
-    //         expected = DeepMerge(this.defaultExpected, expected);
-
-    //         let actual = Interpolator.initialize(initial);
-
-    //         expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
-    //         expect(actual).to.deep.equal(expected);
-
-    //     });
-
-    //     it('should not log any warning message if options.template is defined', async () => {
-
-    //         let initial = {
-    //             template: 'Interpolate me2! {{}}',
-    //         };
-
-    //         let expected = {
-    //             options: {
-    //                 template: 'Interpolate me2! {{}}',
-    //             },
-    //             transience: {
-    //                 logs: [
-    //                     '[NOTICE] Starting with the following options:',
-    //                     '[NOTICE] template(t): "Interpolate me2! {{}}"',
-    //                     '[NOTICE] fileTemplate(ft): ""',
-    //                     '[NOTICE] asString(as): false',
-    //                     '[NOTICE] data(d): {}',
-    //                     '[NOTICE] fileData(fd): ""',
-    //                     '[NOTICE] interpolators(i): [{"p":"#>","s":"<#","t":"path"},{"p":"{{","s":"}}","t":"var"},{"p":"+>","s":"<+","t":"eval"}]',
-    //                     '[NOTICE] replaceWithUndefined(rwu): true',
-    //                     '[NOTICE] replaceWithEmptyString(rwes): false',
-    //                     '[NOTICE] noProcessing(np): false',
-    //                     '[NOTICE] returnOnlyResult(ror): false',
-    //                     '[NOTICE] silenceLogs(sl): false',
-    //                     '[NOTICE] noLogs(nl): false',
-    //                     '[NOTICE] noChanges(nc): false',
-    //                     '[NOTICE] filterOut(fo): []',
-    //                     '[NOTICE] levels(l): null',
-    //                     '[NOTICE] interpolationLevels(il): null'
-    //                 ]
-    //             }
-    //         };
-
-    //         expected = DeepMerge(this.defaultExpected, expected);
-
-    //         let actual = Interpolator.initialize(initial);
-
-    //         expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
-    //         expect(actual).to.deep.equal(expected);
-
-    //     });
-
-
-
-    //     afterEach(() => {
-    //         /** Restoring the console.log */
-    //         console.log.restore();
-
-    //         /** Restoring the path.dirname */
-    //         path.dirname.restore();
-    //     });
-    // });
-
-    // describe('-> getPathContext', () => {
-    //     it('should return an empty string when path does not have a context', async () => {
-
-    //         let initial = 'bla';
-    //         let expected = '';
-
-    //         let actual = Interpolator.getPathContext(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return an empty string when path has an empty context', async () => {
-
-    //         let initial = 'bla|';
-    //         let expected = '';
-
-    //         let actual = Interpolator.getPathContext(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the context when the context is present', async () => {
-
-    //         let initial = 'bla|vsScheme';
-    //         let expected = 'vsScheme';
-
-    //         let actual = Interpolator.getPathContext(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-    // });
-
-    // describe('-> removePathContext', () => {
-    //     it('should return the path when path does not have a context', async () => {
-
-    //         let initial = 'bla';
-    //         let expected = 'bla';
-
-    //         let actual = Interpolator.removePathContext(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the path when path has an empty context', async () => {
-
-    //         let initial = 'bla|';
-    //         let expected = 'bla';
-
-    //         let actual = Interpolator.removePathContext(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the path when the context is present', async () => {
-
-    //         let initial = 'bla|vsScheme';
-    //         let expected = 'bla';
-
-    //         let actual = Interpolator.removePathContext(initial);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-    // });
-
-    // describe('-> getContext', () => {
-
-    //     it('should return an empty object if contexts is undefined', async () => {
-
-    //         let contextName = '';
-    //         let expected;
-
-    //         let actual = Interpolator.getContext(contextName);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return an empty object if contexts is not an array', async () => {
-
-    //         let contextName = '';
-    //         let contexts = 'lorem ipsum';
-    //         let expected = 'lorem ipsum';
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return contexts when is array and contextName is empty string', async () => {
-
-    //         let contextName = '';
-    //         let contexts = [null, undefined, 'a', 3, true, false, 'lorem', NaN, [], {}, 0, -5];
-    //         let expected = contexts;
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return an empty object is null is passed as contexts', async () => {
-
-    //         let contextName = '';
-    //         let contexts = null;
-    //         let expected = null;
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the contexts object if is defined and is not null', async () => {
-
-    //         let contextName = '';
-    //         let contexts = {
-    //             prop1: 'prop1',
-    //             prop2: 'prop2'
-    //         };
-    //         let expected = contexts;
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return an empty context if the context object contains name and collection properties', async () => {
-
-    //         let contextName = 'lorem';
-    //         let contexts = {
-    //             name: 'vsScheme',
-    //             collection: [4, 5, 6]
-    //         };
-    //         let expected;
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return an empty object if contexts is is an array but is empty', async () => {
-
-    //         let contextName = '';
-    //         let contexts = [];
-    //         let expected = [];
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the array when the first object does not match the contexts schema', async () => {
-
-    //         let contextName = '';
-    //         let contexts = [
-    //             {
-    //                 prop1: 'vsScheme',
-    //                 prop2: [1, 2, 3]
-    //             },
-    //             {
-    //                 name: 'collection',
-    //                 collection: [4, 5, 6]
-    //             }
-    //         ];
-
-    //         let expected = contexts;
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the first context if contextName is an empty string', async () => {
-
-    //         let contextName = '';
-    //         let contexts = [
-    //             {
-    //                 name: 'vsScheme',
-    //                 collection: [1, 2, 3]
-    //             },
-    //             {
-    //                 name: 'collection',
-    //                 collection: [4, 5, 6]
-    //             }
-    //         ];
-
-    //         let expected = [1, 2, 3];
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the right context for contextName (0)', async () => {
-
-    //         let contextName = 'vsScheme';
-    //         let contexts = [
-    //             {
-    //                 name: 'vsScheme',
-    //                 collection: [1, 2, 3]
-    //             },
-    //             {
-    //                 name: 'collection',
-    //                 collection: [4, 5, 6]
-    //             }
-    //         ];
-
-    //         let expected = [1, 2, 3];
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return the right context for contextName (1)', async () => {
-
-    //         let contextName = 'collection';
-    //         let contexts = [
-    //             {
-    //                 name: 'vsScheme',
-    //                 collection: [1, 2, 3]
-    //             },
-    //             {
-    //                 name: 'collection',
-    //                 collection: [4, 5, 6]
-    //             }
-    //         ];
-
-    //         let expected = [4, 5, 6];
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should return a real life example (1)', async () => {
-
-    //         let contextName = '';
-    //         let contexts = [
-    //             {
-    //                 name: 'collection',
-    //                 collection: [1, 2, 3]
-    //             }
-    //         ];
-
-    //         let expected = [1, 2, 3];
-
-    //         let actual = Interpolator.getContext(contextName, contexts);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-    // });
-
-    // describe('-> interpolate', () => {
-
-    //     it('should forward garbage data (undefined)', async () => {
-
-    //         let initial;
-    //         let expected;
-
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should forward garbage data (null)', async () => {
-
-    //         let initial = null;
-    //         let expected = null;
-
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should forward garbage data (Boolean false)', async () => {
-
-    //         let initial = false;
-    //         let expected = false;
-
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should leave a number as it was', async () => {
-
-    //         let initial = 3;
-    //         let expected = 3;
-
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should leave a DateTime object as it is', async () => {
-
-    //         let initial = new Date('Sun Feb 28 2010 05:30:00 GMT+0530 (IST)');
-    //         let expected = new Date('Sun Feb 28 2010 05:30:00 GMT+0530 (IST)');
-
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should leave an empty array as it is', async () => {
-
-    //         let initial = [];
-    //         let expected = [];
-
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
-
-    //     it('should leave an empty object as it is', async () => {
-
-    //         let initial = {};
-    //         let expected = {};
-
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+    describe('-> filterOut', () => {
+        it('should return the property as it is if is undefined', async () => {
+            let initial = {
+                template: undefined,
+                filterOut: []
+            };
+
+            let expected = {
+                filtered: undefined,
+                changes: [],
+                changeOrder: -1
+            };
+            let actual = Interpolator.filterOut(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the property filtered out when is a string', async () => {
+            let initial = {
+                template: 'lorem ipsum    dolor sit amet',
+                filterOut: ['   ']
+            };
+
+            let expected = {
+                filtered: 'lorem ipsum dolor sit amet',
+                changes: [
+                    {idx: 11, pt: '', bf: '   ', af: '', od: 0}
+                ],
+                changeOrder: 0
+            };
+            let actual = Interpolator.filterOut(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the property filtered out when is an simple object', async () => {
+            let initial = {
+                template: {prop1: 'lorem ipsum    dolor sit amet', prop2: 5},
+                filterOut: ['   ']
+            };
+
+            let expected = {
+                filtered: {prop1: 'lorem ipsum dolor sit amet', prop2: 5},
+                changes: [
+                    {idx: 11, pt: 'prop1', bf: '   ', af: '', od: 0}
+                ],
+                changeOrder: 0
+            };
+            let actual = Interpolator.filterOut(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the property filtered out when is an simple array', async () => {
+            let initial = {
+                template: ['lorem ipsum    dolor sit amet', 5],
+                filterOut: ['   ']
+            };
+
+            let expected = {
+                filtered: ['lorem ipsum dolor sit amet', 5],
+                changes: [
+                    {idx: 11, pt: '[0]', bf: '   ', af: '', od: 0}
+                ],
+                changeOrder: 0
+            };
+            let actual = Interpolator.filterOut(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the property filtered out when is an simple array (3 elements)', async () => {
+            let initial = {
+                template: ['   lorem ipsum    dolor sit amet', 5, 'lorem ipsum dolor    sit amet   '],
+                filterOut: ['   ']
+            };
+
+            let expected = {
+                filtered: ['lorem ipsum dolor sit amet', 5, 'lorem ipsum dolor sit amet'],
+                changes: [
+                    {idx: 0, pt: '[0]', bf: '   ', af: '', od: 0},
+                    {idx: 11, pt: '[0]', bf: '   ', af: '', od: 1},
+                    {idx: 17, pt: '[2]', bf: '   ', af: '', od: 2},
+                    {idx: 26, pt: '[2]', bf: '   ', af: '', od: 3}
+                ],
+                changeOrder: 3
+            };
+            let actual = Interpolator.filterOut(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+    });
+
+    describe('-> reverse', () => {
+        it('should reverse a simple string', async () => {
+            let initial = {
+                result: 'lorem ipsum dolor sit amet',
+                changes: [
+                    {idx: 11, pt: '', bf: '   ', af: '', od: 0}
+                ]
+            };
+
+            let expected = 'lorem ipsum    dolor sit amet';
+            let actual = Interpolator.reverse(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string with 3 level interpolation', async () => {
+            let initial = {
+                result: 'lorem ipsum dolor sit amet',
+                changes: [
+                    {idx: 18, pt: '', bf: '{{z}}', af: '3', od: 0},
+                    {idx: 15, pt: '', bf: '{{y3123}}', af: 'nx', od: 1},
+                    {idx: 12, pt: '', bf: '{{xnxabc}}', af: 'dolor', od: 2}
+                ]
+            };
+
+            let expected = 'lorem ipsum {{x{{y{{z}}123}}abc}} sit amet';
+            let actual = Interpolator.reverse(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+    });
+
+    describe('-> reverseChange', () => {
+        it('should reverse a simple string (replace with empty string)', async () => {
+            let initial = {
+                input: 'lorem ipsum dolor sit amet',
+                change: {idx: 11, pt: '', bf: '   ', af: '', od: 0}
+            };
+
+            let expected = 'lorem ipsum    dolor sit amet';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string (replace with another string)', async () => {
+            let initial = {
+                input: 'lorem ipsum Consecteur dolor sit amet',
+                change: {idx: 11, pt: '', bf: '   ', af: 'Consecteur ', od: 0}
+            };
+
+            let expected = 'lorem ipsum    dolor sit amet';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string (replace empty string with another string - start)', async () => {
+            let initial = {
+                input: 'bla lorem ipsum Consecteur dolor sit amet',
+                change: {idx: 0, pt: '', bf: '', af: 'bla ', od: 0}
+            };
+
+            let expected = 'lorem ipsum Consecteur dolor sit amet';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string (replace empty string with another string - end)', async () => {
+            let initial = {
+                input: 'lorem ipsum Consecteur dolor sit amet bla',
+                change: {idx: 37, pt: '', bf: '', af: 'bla ', od: 0}
+            };
+
+            let expected = 'lorem ipsum Consecteur dolor sit amet';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string (replace empty string with multiple strings - start, middle, end and change refers to middle)', async () => {
+            let initial = {
+                input: 'bla lorem ipsum bla dolor sit amet bla',
+                change: {idx: 16, pt: '', bf: '', af: 'bla ', od: 0}
+            };
+
+            let expected = 'bla lorem ipsum dolor sit amet bla';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should reverse a simple string (multiline)', async () => {
+            let initial = {
+                input: `lorem ipsum\nConsecteur amet\nbla bla bla\ndolor sit amet`,
+                change: {idx: 11, pt: '', bf: `\n{{if (x === true) {}}\nConsecteur amet\nbla bla bla\n{{ } }}\n`, af: '\nConsecteur amet\nbla bla bla\n', od: 0}
+            };
+
+            let expected = 'lorem ipsum\n{{if (x === true) {}}\nConsecteur amet\nbla bla bla\n{{ } }}\ndolor sit amet';
+            let actual = Interpolator.reverseChange(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+    });
+
+    describe('-> getCCAcronym', () => {
+        it('should return an empty string when undefined is passed', async () => {
+            let actual = Interpolator.getCCAcronym();
+            expect(actual).to.deep.equal('');
+        });
+
+        it('should return an empty string when empty string is passed', async () => {
+            let actual = Interpolator.getCCAcronym('');
+            expect(actual).to.deep.equal('');
+        });
+
+        it('should return just the first letter when a simple word is passed', async () => {
+            let actual = Interpolator.getCCAcronym('word');
+            expect(actual).to.deep.equal('w');
+        });
+
+        it('should return an acronym from an camel case string (1)', async () => {
+            let actual = Interpolator.getCCAcronym('replaceWithEmptyString');
+            expect(actual).to.deep.equal('rwes');
+        });
+
+        it('should return an acronym from an camel case string (2)', async () => {
+            let actual = Interpolator.getCCAcronym('interpolationLevels');
+            expect(actual).to.deep.equal('il');
+        });
+
+        it('should return an acronym from an camel case string (3)', async () => {
+            let actual = Interpolator.getCCAcronym('returnOnlyResult');
+            expect(actual).to.deep.equal('ror');
+        });
+    });
+
+    describe('-> initialize', () => {
+        beforeEach(() => {
+            this.defaultExpected = {
+                options: {
+                    template: '',
+                    fileTemplate: '',
+                    asString: false,
+                    data: {},
+                    fileData: '',
+                    interpolators: [
+                        {p: '{{', s: '}}', t: 'code'}
+                    ],
+                    replaceWithUndefined: true,
+                    replaceWithEmptyString: false,
+                    noProcessing: false,
+                    returnOnlyResult: false,
+                    silenceLogs: false,
+                    noLogs: false,
+                    noChanges: false,
+                    filterOut: [],
+                    levels: null,
+                    interpolationLevels: null
+                },
+                transience: {
+                    logs: [],
+                    changeOrder: -1,
+                    changes: []
+                }
+            };
+
+            this.defaultLogs = [
+                '[NOTICE] Starting with the following options:',
+                '[NOTICE] template(t): ""',
+                '[NOTICE] fileTemplate(ft): ""',
+                '[NOTICE] asString(as): false',
+                '[NOTICE] data(d): {}',
+                '[NOTICE] fileData(fd): ""',
+                '[NOTICE] interpolators(i): [{"p":"{{","s":"}}","t":"code"}]',
+                '[NOTICE] replaceWithUndefined(rwu): true',
+                '[NOTICE] replaceWithEmptyString(rwes): false',
+                '[NOTICE] noProcessing(np): false',
+                '[NOTICE] returnOnlyResult(ror): false',
+                '[NOTICE] silenceLogs(sl): false',
+                '[NOTICE] noLogs(nl): false',
+                '[NOTICE] noChanges(nc): false',
+                '[NOTICE] filterOut(fo): []',
+                '[NOTICE] levels(l): null',
+                '[NOTICE] interpolationLevels(il): null'
+            ];
+
+            /** Stubbing console.log */
+            this.consoleLogStub = sinon.spy(console, 'log');
+
+            /** Stubbing dirname */
+            this.pathDirnameStub = sinon.stub(path, 'dirname');
+            this.pathDirnameStub.returns('');
+        });
+        it('should log a warning message and return defaults if options is undefined', async () => {
+
+            let expected = {
+                options: {},
+                transience: {
+                    logs: [
+                        '[WARNING] The options argument was invalid. Therefore, defaultOptions will be used.',
+                        ...this.defaultLogs
+                    ]
+                }
+            };
+
+            expected = DeepMerge(this.defaultExpected, expected);
+
+            let actual = Interpolator.initialize();
+
+            expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
+            expect(actual).to.deep.equal(expected);
+
+        });
+
+        it('should log a warning message and return defaults if options is null', async () => {
+
+            let expected = {
+                options: {},
+                transience: {
+                    logs: [
+                        '[WARNING] The options argument was invalid. Therefore, defaultOptions will be used.',
+                        ...this.defaultLogs
+                    ]
+                }
+            };
+
+            expected = DeepMerge(this.defaultExpected, expected);
+
+            let actual = Interpolator.initialize();
+
+            expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
+            expect(actual).to.deep.equal(expected);
+
+        });
+
+        it('should not log any warning messages and return defaults if options is empty object', async () => {
+
+            let expected = {
+                options: {},
+                transience: {
+                    logs: [
+                        ...this.defaultLogs
+                    ]
+                }
+            };
+
+            expected = DeepMerge(this.defaultExpected, expected);
+
+            let actual = Interpolator.initialize({});
+
+            expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
+            expect(actual).to.deep.equal(expected);
+
+        });
+
+        it('should log a warning message if both template and t arguments are defined', async () => {
+
+            let initial = {
+                template: 'Interpolate me! {{}}',
+                t: 'Interpolate me2! {{}}',
+            };
+
+            let expected = {
+                options: {
+                    template: 'Interpolate me! {{}}',
+                },
+                transience: {
+                    logs: [
+                        '[WARNING] Both options.t and options.template are defined. Using options.template: "Interpolate me! {{}}"',
+                        '[NOTICE] Starting with the following options:',
+                        '[NOTICE] template(t): "Interpolate me! {{}}"',
+                        '[NOTICE] fileTemplate(ft): ""',
+                        '[NOTICE] asString(as): false',
+                        '[NOTICE] data(d): {}',
+                        '[NOTICE] fileData(fd): ""',
+                        '[NOTICE] interpolators(i): [{"p":"{{","s":"}}","t":"code"}]',
+                        '[NOTICE] replaceWithUndefined(rwu): true',
+                        '[NOTICE] replaceWithEmptyString(rwes): false',
+                        '[NOTICE] noProcessing(np): false',
+                        '[NOTICE] returnOnlyResult(ror): false',
+                        '[NOTICE] silenceLogs(sl): false',
+                        '[NOTICE] noLogs(nl): false',
+                        '[NOTICE] noChanges(nc): false',
+                        '[NOTICE] filterOut(fo): []',
+                        '[NOTICE] levels(l): null',
+                        '[NOTICE] interpolationLevels(il): null'
+                    ]
+                }
+            };
+
+            expected = DeepMerge(this.defaultExpected, expected);
+
+            let actual = Interpolator.initialize(initial);
+
+            expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
+            expect(actual).to.deep.equal(expected);
+
+        });
+
+        it('should not log any warning message if options.t is defined', async () => {
+
+            let initial = {
+                t: 'Interpolate me2! {{}}',
+            };
+
+            let expected = {
+                options: {
+                    template: 'Interpolate me2! {{}}',
+                },
+                transience: {
+                    logs: [
+                        '[NOTICE] Starting with the following options:',
+                        '[NOTICE] template(t): "Interpolate me2! {{}}"',
+                        '[NOTICE] fileTemplate(ft): ""',
+                        '[NOTICE] asString(as): false',
+                        '[NOTICE] data(d): {}',
+                        '[NOTICE] fileData(fd): ""',
+                        '[NOTICE] interpolators(i): [{"p":"{{","s":"}}","t":"code"}]',
+                        '[NOTICE] replaceWithUndefined(rwu): true',
+                        '[NOTICE] replaceWithEmptyString(rwes): false',
+                        '[NOTICE] noProcessing(np): false',
+                        '[NOTICE] returnOnlyResult(ror): false',
+                        '[NOTICE] silenceLogs(sl): false',
+                        '[NOTICE] noLogs(nl): false',
+                        '[NOTICE] noChanges(nc): false',
+                        '[NOTICE] filterOut(fo): []',
+                        '[NOTICE] levels(l): null',
+                        '[NOTICE] interpolationLevels(il): null'
+                    ]
+                }
+            };
+
+            expected = DeepMerge(this.defaultExpected, expected);
+
+            let actual = Interpolator.initialize(initial);
+
+            expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
+            expect(actual).to.deep.equal(expected);
+
+        });
+
+        it('should not log any warning message if options.template is defined', async () => {
+
+            let initial = {
+                template: 'Interpolate me2! {{}}',
+            };
+
+            let expected = {
+                options: {
+                    template: 'Interpolate me2! {{}}',
+                },
+                transience: {
+                    logs: [
+                        '[NOTICE] Starting with the following options:',
+                        '[NOTICE] template(t): "Interpolate me2! {{}}"',
+                        '[NOTICE] fileTemplate(ft): ""',
+                        '[NOTICE] asString(as): false',
+                        '[NOTICE] data(d): {}',
+                        '[NOTICE] fileData(fd): ""',
+                        '[NOTICE] interpolators(i): [{"p":"{{","s":"}}","t":"code"}]',
+                        '[NOTICE] replaceWithUndefined(rwu): true',
+                        '[NOTICE] replaceWithEmptyString(rwes): false',
+                        '[NOTICE] noProcessing(np): false',
+                        '[NOTICE] returnOnlyResult(ror): false',
+                        '[NOTICE] silenceLogs(sl): false',
+                        '[NOTICE] noLogs(nl): false',
+                        '[NOTICE] noChanges(nc): false',
+                        '[NOTICE] filterOut(fo): []',
+                        '[NOTICE] levels(l): null',
+                        '[NOTICE] interpolationLevels(il): null'
+                    ]
+                }
+            };
+
+            expected = DeepMerge(this.defaultExpected, expected);
+
+            let actual = Interpolator.initialize(initial);
+
+            expect(this.consoleLogStub.callCount).to.be.equal(expected.transience.logs.length);
+            expect(actual).to.deep.equal(expected);
+
+        });
+
+
+
+        afterEach(() => {
+            /** Restoring the console.log */
+            console.log.restore();
+
+            /** Restoring the path.dirname */
+            path.dirname.restore();
+        });
+    });
+
+    describe('-> getPathContext', () => {
+        it('should return an empty string when path does not have a context', async () => {
+
+            let initial = 'bla';
+            let expected = '';
+
+            let actual = Interpolator.getPathContext(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return an empty string when path has an empty context', async () => {
+
+            let initial = 'bla|';
+            let expected = '';
+
+            let actual = Interpolator.getPathContext(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the context when the context is present', async () => {
+
+            let initial = 'bla|vsScheme';
+            let expected = 'vsScheme';
+
+            let actual = Interpolator.getPathContext(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+    });
+
+    describe('-> removePathContext', () => {
+        it('should return the path when path does not have a context', async () => {
+
+            let initial = 'bla';
+            let expected = 'bla';
+
+            let actual = Interpolator.removePathContext(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the path when path has an empty context', async () => {
+
+            let initial = 'bla|';
+            let expected = 'bla';
+
+            let actual = Interpolator.removePathContext(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the path when the context is present', async () => {
+
+            let initial = 'bla|vsScheme';
+            let expected = 'bla';
+
+            let actual = Interpolator.removePathContext(initial);
+            expect(actual).to.deep.equal(expected);
+        });
+    });
+
+    describe('-> getContext', () => {
+
+        it('should return an empty object if contexts is undefined', async () => {
+
+            let contextName = '';
+            let expected;
+
+            let actual = Interpolator.getContext(contextName);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return an empty object if contexts is not an array', async () => {
+
+            let contextName = '';
+            let contexts = 'lorem ipsum';
+            let expected = 'lorem ipsum';
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return contexts when is array and contextName is empty string', async () => {
+
+            let contextName = '';
+            let contexts = [null, undefined, 'a', 3, true, false, 'lorem', NaN, [], {}, 0, -5];
+            let expected = contexts;
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return an empty object is null is passed as contexts', async () => {
+
+            let contextName = '';
+            let contexts = null;
+            let expected = null;
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the contexts object if is defined and is not null', async () => {
+
+            let contextName = '';
+            let contexts = {
+                prop1: 'prop1',
+                prop2: 'prop2'
+            };
+            let expected = contexts;
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return an empty context if the context object contains name and collection properties', async () => {
+
+            let contextName = 'lorem';
+            let contexts = {
+                name: 'vsScheme',
+                collection: [4, 5, 6]
+            };
+            let expected;
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return an empty object if contexts is is an array but is empty', async () => {
+
+            let contextName = '';
+            let contexts = [];
+            let expected = [];
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the array when the first object does not match the contexts schema', async () => {
+
+            let contextName = '';
+            let contexts = [
+                {
+                    prop1: 'vsScheme',
+                    prop2: [1, 2, 3]
+                },
+                {
+                    name: 'collection',
+                    collection: [4, 5, 6]
+                }
+            ];
+
+            let expected = contexts;
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the first context if contextName is an empty string', async () => {
+
+            let contextName = '';
+            let contexts = [
+                {
+                    name: 'vsScheme',
+                    collection: [1, 2, 3]
+                },
+                {
+                    name: 'collection',
+                    collection: [4, 5, 6]
+                }
+            ];
+
+            let expected = [1, 2, 3];
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the right context for contextName (0)', async () => {
+
+            let contextName = 'vsScheme';
+            let contexts = [
+                {
+                    name: 'vsScheme',
+                    collection: [1, 2, 3]
+                },
+                {
+                    name: 'collection',
+                    collection: [4, 5, 6]
+                }
+            ];
+
+            let expected = [1, 2, 3];
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return the right context for contextName (1)', async () => {
+
+            let contextName = 'collection';
+            let contexts = [
+                {
+                    name: 'vsScheme',
+                    collection: [1, 2, 3]
+                },
+                {
+                    name: 'collection',
+                    collection: [4, 5, 6]
+                }
+            ];
+
+            let expected = [4, 5, 6];
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should return a real life example (1)', async () => {
+
+            let contextName = '';
+            let contexts = [
+                {
+                    name: 'collection',
+                    collection: [1, 2, 3]
+                }
+            ];
+
+            let expected = [1, 2, 3];
+
+            let actual = Interpolator.getContext(contextName, contexts);
+            expect(actual).to.deep.equal(expected);
+        });
+    });
+
+    describe('-> interpolate', () => {
+
+        it('should forward garbage data (undefined)', async () => {
+
+            let initial;
+            let expected;
+
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should forward garbage data (null)', async () => {
+
+            let initial = null;
+            let expected = null;
+
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should forward garbage data (Boolean false)', async () => {
+
+            let initial = false;
+            let expected = false;
+
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should leave a number as it was', async () => {
+
+            let initial = 3;
+            let expected = 3;
+
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should leave a DateTime object as it is', async () => {
+
+            let initial = new Date('Sun Feb 28 2010 05:30:00 GMT+0530 (IST)');
+            let expected = new Date('Sun Feb 28 2010 05:30:00 GMT+0530 (IST)');
+
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should leave an empty array as it is', async () => {
+
+            let initial = [];
+            let expected = [];
+
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should leave an empty object as it is', async () => {
+
+            let initial = {};
+            let expected = {};
+
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
 
     //     it('should choose the fileTemplate argument if the fileTemplate argument points to an existent file', async () => {
 
@@ -876,17 +874,17 @@ describe('Interpolator', () => {
     //         expect(actual).to.deep.equal(expected);
     //     });
 
-    //     it('should return the root value if the path is not specific', async () => {
+        // it('should return the root value if the path is not specific', async () => {
 
-    //         let options = {
-    //             template: '#><#',
-    //             context: 'value'
-    //         };
-    //         let expected = 'value';
+        //     let options = {
+        //         template: '#><#',
+        //         context: 'value'
+        //     };
+        //     let expected = 'value';
 
-    //         let actual = Interpolator.interpolate(options);
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+        //     let actual = Interpolator.interpolate(options);
+        //     expect(actual).to.deep.equal(expected);
+        // });
 
     //     it('should return the root value if the path is not specific and the context is an array', async () => {
 
@@ -912,100 +910,100 @@ describe('Interpolator', () => {
     //         expect(actual).to.deep.equal(expected);
     //     });
 
-    //     it('should leave an empty string as it is', async () => {
+        it('should leave an empty string as it is', async () => {
 
-    //         let initial = '';
-    //         let expected = '';
+            let initial = '';
+            let expected = '';
 
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
 
-    //     it('should leave a string unaltered when no interpolation is detected', async () => {
+        it('should leave a string unaltered when no interpolation is detected', async () => {
 
-    //         let initial = 'Lorem ipsum dolor sit amet consectetuer';
-    //         let expected = 'Lorem ipsum dolor sit amet consectetuer';
+            let initial = 'Lorem ipsum dolor sit amet consectetuer';
+            let expected = 'Lorem ipsum dolor sit amet consectetuer';
 
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
 
-    //     it('should leave a string unaltered when no interpolation is detected (partial path prefixes)', async () => {
+        it('should leave a string unaltered when no interpolation is detected (partial path prefixes)', async () => {
 
-    //         let initial = 'Lorem ipsum dolor sit #x<# consectetuer';
-    //         let expected = 'Lorem ipsum dolor sit #x<# consectetuer';
+            let initial = 'Lorem ipsum dolor sit #x<# consectetuer';
+            let expected = 'Lorem ipsum dolor sit #x<# consectetuer';
 
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
 
-    //     it('should leave a string unaltered when no interpolation is detected (partial path suffixes)', async () => {
+        it('should leave a string unaltered when no interpolation is detected (partial path suffixes)', async () => {
 
-    //         let initial = 'Lorem ipsum dolor sit >#x< consectetuer';
-    //         let expected = 'Lorem ipsum dolor sit >#x< consectetuer';
+            let initial = 'Lorem ipsum dolor sit >#x< consectetuer';
+            let expected = 'Lorem ipsum dolor sit >#x< consectetuer';
 
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
 
-    //     it('should leave a string unaltered when no interpolation is detected (partial var prefixes)', async () => {
+        it('should leave a string unaltered when no interpolation is detected (partial var prefixes)', async () => {
 
-    //         let initial = 'Lorem ipsum dolor sit {x}} consectetuer';
-    //         let expected = 'Lorem ipsum dolor sit {x}} consectetuer';
+            let initial = 'Lorem ipsum dolor sit {x}} consectetuer';
+            let expected = 'Lorem ipsum dolor sit {x}} consectetuer';
 
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
 
-    //     it('should leave a string unaltered when no interpolation is detected (partial var suffixes)', async () => {
+        it('should leave a string unaltered when no interpolation is detected (partial var suffixes)', async () => {
 
-    //         let initial = 'Lorem ipsum dolor sit {{x} consectetuer';
-    //         let expected = 'Lorem ipsum dolor sit {{x} consectetuer';
+            let initial = 'Lorem ipsum dolor sit {{x} consectetuer';
+            let expected = 'Lorem ipsum dolor sit {{x} consectetuer';
 
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
 
-    //     it('should leave a string unaltered when no interpolation is detected (partial eval prefixes)', async () => {
+        it('should leave a string unaltered when no interpolation is detected (partial eval prefixes)', async () => {
 
-    //         let initial = 'Lorem ipsum dolor sit +x<+ consectetuer';
-    //         let expected = 'Lorem ipsum dolor sit +x<+ consectetuer';
+            let initial = 'Lorem ipsum dolor sit +x<+ consectetuer';
+            let expected = 'Lorem ipsum dolor sit +x<+ consectetuer';
 
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
 
-    //     it('should leave a string unaltered when no interpolation is detected (partial eval suffixes)', async () => {
+        it('should leave a string unaltered when no interpolation is detected (partial eval suffixes)', async () => {
 
-    //         let initial = 'Lorem ipsum dolor sit +>x+ consectetuer';
-    //         let expected = 'Lorem ipsum dolor sit +>x+ consectetuer';
+            let initial = 'Lorem ipsum dolor sit +>x+ consectetuer';
+            let expected = 'Lorem ipsum dolor sit +>x+ consectetuer';
 
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
 
-    //     it('should add undefined if context are not defined (path interpolation)', async () => {
+        // it('should add undefined if context are not defined (path interpolation)', async () => {
 
-    //         let initial = 'Lorem ipsum dolor sit #>[2].lorem.ipsum[5].ipsum<# consectetuer';
-    //         let expected = 'Lorem ipsum dolor sit undefined consectetuer';
+        //     let initial = 'Lorem ipsum dolor sit {{[2].lorem.ipsum[5].ipsum}} consectetuer';
+        //     let expected = 'Lorem ipsum dolor sit undefined consectetuer';
 
-    //         let actual = Interpolator.interpolate({template: initial});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+        //     let actual = Interpolator.interpolate({template: initial});
+        //     expect(actual).to.deep.equal(expected);
+        // });
 
-    //     it('should add undefined if context is defined but is garbage (number) (path interpolation)', async () => {
+        // it('should add undefined if context is defined but is garbage (number) (path interpolation)', async () => {
 
-    //         let initial = 'Lorem ipsum dolor sit #>[2].lorem.ipsum[5].ipsum<# consectetuer';
-    //         let context = 3;
-    //         let expected = 'Lorem ipsum dolor sit undefined consectetuer';
+        //     let initial = 'Lorem ipsum dolor sit {{[2].lorem.ipsum[5].ipsum}} consectetuer';
+        //     let context = 3;
+        //     let expected = 'Lorem ipsum dolor sit undefined consectetuer';
 
-    //         let actual = Interpolator.interpolate({template: initial, context: context});
-    //         expect(actual).to.deep.equal(expected);
-    //     });
+        //     let actual = Interpolator.interpolate({template: initial, context: context});
+        //     expect(actual).to.deep.equal(expected);
+        // });
 
     //     it('should add undefined if context is defined but is garbage (object) (path interpolation)', async () => {
 
-    //         let initial = 'Lorem ipsum dolor sit #>[2].lorem.ipsum[5].ipsum<# consectetuer';
+    //         let initial = 'Lorem ipsum dolor sit {{[2].lorem.ipsum[5].ipsum}} consectetuer';
     //         let context = {a: 'b'};
     //         let expected = 'Lorem ipsum dolor sit undefined consectetuer';
 
@@ -5067,5 +5065,5 @@ describe('Interpolator', () => {
     //         let actual = Interpolator.interpolate({template: initial, context: context, noProcessing: true});
     //         expect(actual).to.deep.equal(expected);
     //     });
-    // });
+    });
 });
