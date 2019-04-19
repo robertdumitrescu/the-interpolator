@@ -87,6 +87,80 @@ describe('Interpolator', () => {
             let actual = Interpolator.interpolate(options);
             expect(actual).to.deep.equal(expected);
         });
+
+        it('should execute code', async () => {
+
+            let initial = `
+{{ for (let it1 = 0; it1 < x.length; it1++) { }}
+    {{ for (let it2 = 0; it2 < x[it1].length; it2++) { }}
+    
+        Iterator1 value: {{it1}} | Iterator2 value: {{it2}} | Iterator3 value: {{it3}}
+        Sum of Iterators: {{ it{{number1}} + it{{number2}} + it{{number3}} }}
+        Value printed once: {{x[it1][it2]}} | {{x[it1][it3]}} | Value printed twice: {{x[it1][it2] + x[it1][it2]}}
+       {{ if (typeof x[it1][it2] === 'string') { }}
+        This is a string: {{x[it1][it2]}}
+       {{ } else if (isFinite(x[it1][it2])) { }}
+        This is a number: {{x[it1][it2]}} and it can be added to itself: {{x[it{{number1}}][it{{number{{x.length}}}}] + x[it{{number1}}][it{{number2}}]}}
+       {{ } }}
+    {{ } }}
+{{ } }}
+`;
+            let options = {
+                template: initial,
+                data: {
+                    x: [
+                        [3, 4],
+                        ['lorem', 'ipsum'],
+                    ],
+                    number1: 1,
+                    number2: 2
+                },
+                noProcessing: true,
+                returnOnlyResult: true
+            }
+            let expected = `
+
+    
+    
+        Iterator1 value: 0 | Iterator2 value: 0 | Iterator3 value: {{it3}}
+        Sum of Iterators: {{ it{{number1}} + it{{number2}} + it{{number3}} }}
+        Value printed once: 3 | {{x[it1][it3]}} | Value printed twice: 6
+       
+        This is a number: 3 and it can be added to itself: 6
+       
+    
+    
+        Iterator1 value: 0 | Iterator2 value: 1 | Iterator3 value: {{it3}}
+        Sum of Iterators: {{ it{{number1}} + it{{number2}} + it{{number3}} }}
+        Value printed once: 4 | {{x[it1][it3]}} | Value printed twice: 8
+       
+        This is a number: 4 and it can be added to itself: 8
+       
+    
+
+    
+    
+        Iterator1 value: 1 | Iterator2 value: 0 | Iterator3 value: {{it3}}
+        Sum of Iterators: {{ it{{number1}} + it{{number2}} + it{{number3}} }}
+        Value printed once: lorem | {{x[it1][it3]}} | Value printed twice: loremlorem
+       
+        This is a string: lorem
+       
+    
+    
+        Iterator1 value: 1 | Iterator2 value: 1 | Iterator3 value: {{it3}}
+        Sum of Iterators: {{ it{{number1}} + it{{number2}} + it{{number3}} }}
+        Value printed once: ipsum | {{x[it1][it3]}} | Value printed twice: ipsumipsum
+       
+        This is a string: ipsum
+       
+    
+
+`;
+
+            let actual = Interpolator.interpolate(options);
+            expect(actual).to.deep.equal(expected);
+        });
     })
 
     describe('-> filterOut', () => {

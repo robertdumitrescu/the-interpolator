@@ -381,6 +381,7 @@ class Interpolator {
             let tokens = Interpolator.getTokens(collection, separators);
             let parseTree = Interpolator.parseTokens(tokens);
             let jsCode = Interpolator.createCode(parseTree, options);
+            // console.log(jsCode);
 
             let result = eval(jsCode);
 
@@ -584,6 +585,46 @@ class Interpolator {
     }
 
     /**
+     * Make template back from node
+     * @param {Object} node
+     * @param {Object} options
+     */
+    static getTemplateFromNode(node, options) {
+        switch (node.type) {
+        case 'string': {
+            return node.value;
+        }
+            break;
+        case 'code': {
+            let separators = Interpolator.getSeparatorsByType(options.interpolators);
+            let template = separators['code']['prefix'];
+
+            for (let i in node.value) {
+                if (node.value[i].type == 'string') {
+                    template += node.value[i].value;
+                } else {
+                    template += Interpolator.getTemplateFromNode(node.value[i], options);
+                }
+            }
+
+            template += separators['code']['suffix'];
+
+            return template;
+        }
+            break;
+        case 'group':
+        default: {
+            let template = '';
+            for (let i in node.value) {
+                template += Interpolator.getTemplateFromNode(node.value[i], options);
+            }
+            return result;
+        }
+            break;
+        }
+    }
+
+    /**
      * Get var value by name
      * @param {String} varName
      * @param {Array} vars
@@ -605,13 +646,7 @@ class Interpolator {
         }
 
         if (typeof val === 'undefined') {
-            if (options.noProcessing === true) {
-                /** @TODO Instead of doing this, we should save along with the node, the originalInterpolation string */
-                return `{{${varName}}}`;
-            }
-
             return 'undefined';
-
         }
 
 
@@ -661,6 +696,21 @@ class Interpolator {
                 position: 'suffix',
                 type: interpolations[i].type
             };
+        }
+
+        return separators;
+    }
+
+    /**
+    /**
+     * Generates an object with all separators by type
+     * @param {Array} interpolations
+     */
+    static getSeparatorsByType(interpolations) {
+        let separators = {};
+
+        for (let i in interpolations) {
+            separators[interpolations[i].type] = interpolations[i];
         }
 
         return separators;
@@ -780,13 +830,20 @@ class Interpolator {
         if (node.type == 'group') {
             for (let i in node.value) {
                 if (node.value[i].type == 'code') {
-                    if (node.value[i].hasJsCode && node.value[i].value.length == 1){
+                    if (node.value[i].hasJsCode && node.value[i].value.length == 1) {
                         jsCode += node.value[i].value[0].value;
                     } else {
                         let evaluateCode = Interpolator.evaluateTree(node.value[i], options);
+                        let originalTemplate = Interpolator.getTemplateFromNode(node.value[i], options);
+
                         if (!node.value[i].hasJsCode) {
-                            evaluateCode = '_writeIntoInterpolatorResultOutput(' + evaluateCode + ');';
+                            if (options.noProcessing) {
+                                evaluateCode = 'try { if (typeof ' + evaluateCode + ' !== \'undefined\') { interpolatorResultOutput += ' + evaluateCode + '; } else { interpolatorResultOutput += \`' + originalTemplate + '\`; }  } catch { interpolatorResultOutput += \`' + originalTemplate + '\`; };';
+                            } else {
+                                evaluateCode = '_writeIntoInterpolatorResultOutput(' + evaluateCode + ');';
+                            }
                         }
+
                         jsCode += evaluateCode;
                     }
                 } else {
