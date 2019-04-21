@@ -5123,10 +5123,10 @@ describe('Interpolator', () => {
 
     //         let initial = `
     //             0>for(let i=0; i<JSON.stringify(data).length; i++) {<0
-                
+
     //             0> } <0
-                
-                
+
+
     //         `;
 
     //         let context = [
@@ -5139,5 +5139,130 @@ describe('Interpolator', () => {
     //         let actual = Interpolator.interpolate({template: initial, context: context, noProcessing: true});
     //         expect(actual).to.deep.equal(expected);
     //     });
+
+        it('should interpolate with context variables', async () => {
+
+            let initial = {
+                template: {
+                    p1: {
+                        p2: [
+                            {
+                                p3: 3,
+                                p4: 4
+                            },
+                            {
+                                p3: '{{.{{itr0}}.{{itr1}}[{{itr2 - 1}}].p3}}',
+                                p4: 44,
+                                p5: [{p6: 6}, {p6: 66}]
+                            }
+                        ],
+                        p3: [
+                            {
+                                p3: 3.2,
+                                p4: 4.2
+                            },
+                            {
+                                p3: 33.2,
+                                p4: 44.2,
+                                p5: [{p6: 6.2}, {p6: '{{.{{itr0}}.{{itr1}}[{{count2 - 1}}].{{itr3}}[{{itr4 + 1}}].p7}}'}, {p7: 7.2}]
+                            }
+                        ]
+                    }
+                }
+            };
+            let expected = {
+                p1: {
+                    p2: [
+                        {
+                            p3: 3,
+                            p4: 4
+                        },
+                        {
+                            p3: 3,
+                            p4: 44,
+                            p5: [{p6: 6}, {p6: 66}]
+                        }
+                    ],
+                    p3: [
+                        {
+                            p3: 3.2,
+                            p4: 4.2
+                        },
+                        {
+                            p3: 33.2,
+                            p4: 44.2,
+                            p5: [{p6: 6.2}, {p6: 7.2}, {p7: 7.2}]
+                        }
+                    ]
+                }
+            };
+
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
+
+        it('should interpolate with specific default setted for each interpolation', async () => {
+
+            let initial = {
+                template: {
+                    p1: {
+                        p2: [
+                            {
+                                p3: 3,
+                                p4: 4
+                            },
+                            {
+                                p3: '{{.{{itr0}}.{{itr1}}[{{itr2 - 5}}].p3 | {default: 0}}}',
+                                p4: 44,
+                                p5: [{p6: 6}, {p6: 66}]
+                            }
+                        ],
+                        p3: [
+                            {
+                                p3: 3.2,
+                                p4: 4.2
+                            },
+                            {
+                                p3: 33.2,
+                                p4: 44.2,
+                                p5: [{p6: 6.2}, {p6: '{{.{{itr0}}.{{itr1}}[{{count100 - 1}}].{{itr3}}[{{itr4 + 1}}].p7}} | {default: "random string"}}}'}, {p7: 7.2}]
+                            }
+                        ],
+                        p8: '{{nonExistingVariable}}'
+                    }
+                }
+            };
+            let expected = {
+                p1: {
+                    p2: [
+                        {
+                            p3: 3,
+                            p4: 4
+                        },
+                        {
+                            p3: 0,
+                            p4: 44,
+                            p5: [{p6: 6}, {p6: 66}]
+                        }
+                    ],
+                    p3: [
+                        {
+                            p3: 3.2,
+                            p4: 4.2
+                        },
+                        {
+                            p3: 33.2,
+                            p4: 44.2,
+                            p5: [{p6: 6.2}, {p6: 'random string'}, {p7: 7.2}]
+                        }
+                    ],
+                    p8: undefined
+                }
+            };
+
+            let actual = Interpolator.interpolate({template: initial});
+            expect(actual).to.deep.equal(expected);
+        });
+
     });
 });
