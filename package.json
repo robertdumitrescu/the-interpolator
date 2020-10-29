@@ -16,6 +16,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "type": "module",
   "author": {
     "name": "Robert Dumitrescu",
     "email": "robertdum01@gmail.com",
@@ -38,14 +39,207 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "chalk": "~2.4.2",
-    "collection-path-helper": "~1.1.14",
-    "deepmerge": "~3.2.0",
-    "lodash": "~4.17.11"
+    "@thi.ng/intervals": "2.0.10",
+    "is-glob": "4.0.1",
+    "lodash": "4.17.15",
+    "lodash.set": "4.3.2",
+    "math-expression-evaluator": "1.2.22",
+    "object-hash": "2.0.3",
+    "uniqid": "5.2.0"
   },
   "devDependencies": {
-    "chai": "~4.2.0",
-    "mocha": "~6.0.2",
-    "sinon": "~7.3.1"
+    "babel-eslint": "10.1.0",
+    "benchmark": "^2.1.4",
+    "c8": "7.1.0",
+    "chai": "4.2.0",
+    "eslint": "6.8.0",
+    "eslint-plugin-import": "2.20.2",
+    "eslint-plugin-jsdoc": "^30.6.5",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-optimize-regex": "1.2.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-sort-imports-es6-autofix": "0.5.0",
+    "eslint-plugin-standard": "4.0.1",
+    "lodash.get": "4.4.2",
+    "mocha": "8.0.1",
+    "nyc": "^15.1.0",
+    "ololog": "1.1.156",
+    "prettier": "2.0.5",
+    "sinon": "9.0.2",
+    "sinon-chai": "3.5.0",
+    "telejson": "4.0.0"
+  },
+  "prettier": {
+    "quoteProps": "as-needed"
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "extends": [
+      "plugin:node/recommended"
+    ],
+    "plugins": [
+      "sort-imports-es6-autofix",
+      "optimize-regex",
+      "jsdoc"
+    ],
+    "parser": "babel-eslint/lib/index.js",
+    "parserOptions": {
+      "ecmaVersion": 2020,
+      "sourceType": "module"
+    },
+    "rules": {
+      "jsdoc/check-alignment": 1,
+      "jsdoc/check-examples": 1,
+      "jsdoc/check-indentation": 1,
+      "jsdoc/check-param-names": 1,
+      "jsdoc/check-syntax": 1,
+      "jsdoc/check-tag-names": 0,
+      "jsdoc/check-types": 1,
+      "jsdoc/implements-on-classes": 1,
+      "jsdoc/newline-after-description": 1,
+      "jsdoc/no-undefined-types": 0,
+      "jsdoc/require-description": 0,
+      "jsdoc/require-description-complete-sentence": 0,
+      "jsdoc/require-hyphen-before-param-description": 1,
+      "jsdoc/require-jsdoc": 1,
+      "jsdoc/require-param": 1,
+      "jsdoc/require-param-description": 1,
+      "jsdoc/require-param-name": 1,
+      "jsdoc/require-param-type": 1,
+      "jsdoc/require-returns": 1,
+      "jsdoc/require-returns-check": 1,
+      "jsdoc/require-returns-description": 0,
+      "jsdoc/require-returns-type": 1,
+      "jsdoc/valid-types": 1,
+      "quotes": [
+        "warn",
+        "single"
+      ],
+      "quote-props": [
+        "warn",
+        "as-needed"
+      ],
+      "array-element-newline": [
+        "warn",
+        {
+          "minItems": 200
+        }
+      ],
+      "array-bracket-newline": [
+        "warn",
+        {
+          "minItems": 200
+        }
+      ],
+      "indent": [
+        "warn",
+        4
+      ],
+      "no-duplicate-imports": "error",
+      "sort-imports-es6-autofix/sort-imports-es6": [
+        "warn",
+        {
+          "ignoreCase": false,
+          "ignoreMemberSort": false,
+          "memberSyntaxSortOrder": [
+            "none",
+            "all",
+            "multiple",
+            "single"
+          ]
+        }
+      ],
+      "no-unused-vars": "warn",
+      "no-unused-expressions": "warn",
+      "no-unused-labels": "warn",
+      "require-jsdoc": [
+        "warn",
+        {
+          "require": {
+            "FunctionDeclaration": true,
+            "MethodDefinition": true,
+            "ClassDeclaration": true,
+            "ArrowFunctionExpression": false,
+            "FunctionExpression": false
+          }
+        }
+      ],
+      "prefer-regex-literals": "warn",
+      "node/file-extension-in-import": [
+        "warn",
+        "always"
+      ],
+      "node/no-unpublished-import": [
+        "off"
+      ],
+      "no-whitespace-before-property": "warn",
+      "prefer-arrow-callback": "warn",
+      "object-curly-spacing": "warn",
+      "no-useless-escape": "warn",
+      "comma-dangle": [
+        "warn",
+        "always-multiline"
+      ],
+      "comma-spacing": [
+        "warn",
+        {
+          "before": false,
+          "after": true
+        }
+      ],
+      "curly": [
+        "warn",
+        "all"
+      ],
+      "padded-blocks": [
+        "warn",
+        "never"
+      ],
+      "arrow-body-style": [
+        "warn",
+        "always"
+      ],
+      "optimize-regex/optimize-regex": "warn",
+      "no-multiple-empty-lines": [
+        "warn",
+        {
+          "max": 2,
+          "maxEOF": 0,
+          "maxBOF": 0
+        }
+      ],
+      "space-infix-ops": [
+        "warn",
+        {
+          "int32Hint": false
+        }
+      ],
+      "keyword-spacing": [
+        "warn",
+        {
+          "after": true,
+          "before": true
+        }
+      ],
+      "key-spacing": [
+        "warn",
+        {
+          "afterColon": true
+        }
+      ]
+    },
+    "settings": {
+      "jsdoc": {
+        "preferredTypes": {
+          "string": "String",
+          "number": "Number",
+          "boolean": "Boolean",
+          "object": "Object"
+        }
+      }
+    }
   }
 }
