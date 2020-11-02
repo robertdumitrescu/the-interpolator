@@ -793,6 +793,118 @@ describe('AnalysisService', () => {
 
             expect(stringify(actual, teleJsonConfig)).to.deep.equal(stringify(expected, teleJsonConfig));
         });
+        it('should analyze a simple interpolation with interpolation like curly braces within options and an actual interpolation within curly braces', () => {
+            /** @type {InterpolationsAnalysis} */
+            let expected = {
+                initial: 'a{{n|b: {{1, 2}, {{c}}, {a, b}}, d: [], l: {j: "sit"}}}c',
+                standardized: 'a{{L1C1|n|{b: {{1, 2}, {{L2C1|c|{}|L2C1}}, {a, b}}, d: [], l: {}}|L1C1}}c',
+                free: 'ac',
+                hasInterpolations: true,
+                isValid: true,
+                interpolations: {
+                    L1C1: {
+                        id: 'L1C1',
+                        level: 1,
+                        initial: '{{n|b: {{1, 2}, {{c}}, {a, b}}, d: [], l: {j: "sit"}}}',
+                        standardized: '{{L1C1|n|{b: {{1, 2}, {{L2C1|c|{}|L2C1}}, {a, b}}, d: [], l: {j: "sit"}}|L1C1}}',
+                        partiallyStandardized: '{{n|b: {{1, 2}, {{L2C1|c|{}|L2C1}}, {a, b}}, d: [], l: {j: "sit"}}}',
+                        depOffset: 0,
+                        localLastIndex: 0,
+                        fragments: ['n', 'b: {{1, 2}, {{c}}, {a, b}}, d: [], l: {j: "sit"}'],
+                        content: 'n',
+                        options: 'b: {{1, 2}, {{c}}, {a, b}}, d: [], l: {j: "sit"}',
+                        processedOptions: {},
+                        dependencies: ['L2C1'],
+                        dependant: '',
+                        rootDependant: '',
+                        separatorsIndexes: [3], // this is broken
+                        initialIndexes: [1, 29], // this is broken
+                    },
+                    L2C1: {
+                        id: 'L2C1',
+                        level: 1,
+                        initial: '{{c}}',
+                        standardized: '{{L2C1|c|{}|L2C1}}',
+                        partiallyStandardized: '{{c}}',
+                        depOffset: 0,
+                        localLastIndex: 0,
+                        fragments: ['n'],
+                        content: 'n',
+                        options: '',
+                        processedOptions: {},
+                        dependencies: [],
+                        dependant: 'L1C1',
+                        rootDependant: 'L1C1',
+                        separatorsIndexes: [3], // this is broken
+                        initialIndexes: [1, 29], // this is broken
+                    },
+                },
+                interpolationsIds: ['L1C1', 'L2C1'],
+                rootInterpolationsIds: ['L1C1'],
+                lastLevelInterpolationsIds: ['L2C1'],
+            };
+
+            /** @type {InterpolationsAnalysis} */
+            let actual = AnalysisService.analyze('a{{n|b: {{1, 2}, {{c}}, {a, b}}, d: [], l: {j: "sit"}}}c');
+
+            expect(stringify(actual, teleJsonConfig)).to.deep.equal(stringify(expected, teleJsonConfig));
+        });
+        it('should analyze an interpolation with an object as options which contains another interpolation with object', () => {
+            /** @type {InterpolationsAnalysis} */
+            let expected = {
+                initial: 'a{{n|b: {{1, 2}, 3}, d: [], l: {j: {{o|j:{{4, 5}, {8, 0}}}}}}}c',
+                standardized: 'a{{L1C1|n|b: {{1, 2}, 3}, d: [], l: {j: {{L2C1|o|{j:{{4, 5}, {8, 0}}}|L2C1}}}|L1C1}}c',
+                free: 'ac',
+                hasInterpolations: true,
+                isValid: true,
+                interpolations: {
+                    L1C1: {
+                        id: 'L1C1',
+                        level: 1,
+                        initial: '{{n|b: {{1, 2}, 3}, d: [], l: {j: {{o|j:{{4, 5}, {8, 0}}}}}}}',
+                        standardized: '{{L1C1|n|b: {{1, 2}, 3}, d: [], l: {j: {{L2C1|o|{j:{{4, 5}, {8, 0}}}|L2C1}}}|L1C1}}',
+                        partiallyStandardized: '{{n|b: {{1, 2}, 3}, d: [], l: {j: {{L2C1|o|{j:{{4, 5}, {8, 0}}}|L2C1}}}}}',
+                        depOffset: 0,
+                        localLastIndex: 0,
+                        fragments: ['n', 'b: {{1, 2}, 3}, d: [], l: {j: {{L2C1|o|{j:{{4, 5}, {8, 0}}}|L2C1}}}}}'],
+                        content: 'n',
+                        options: 'b: {{1, 2}, 3}, d: [], l: {j: {{L2C1|o|{j:{{4, 5}, {8, 0}}}|L2C1}}}}}',
+                        processedOptions: {},
+                        dependencies: ['L2C1'],
+                        dependant: '',
+                        rootDependant: '',
+                        separatorsIndexes: [3], // this is broken
+                        initialIndexes: [1, 29], // this is broken
+                    },
+                    L2C1: {
+                        id: 'L2C1',
+                        level: 1,
+                        initial: '{{o|j:{{4, 5}, {8, 0}}}}',
+                        standardized: '{{L2C1|o|{j:{{4, 5}, {8, 0}}}|L2C1}}',
+                        partiallyStandardized: '{{o|j:{{4, 5}, {8, 0}}}}',
+                        depOffset: 0,
+                        localLastIndex: 0,
+                        fragments: ['j:{{4, 5}, {8, 0}}'],
+                        content: 'o',
+                        options: 'j:{{4, 5}, {8, 0}}',
+                        processedOptions: {},
+                        dependencies: [],
+                        dependant: 'L1C1',
+                        rootDependant: 'L1C1',
+                        separatorsIndexes: [3], // this is broken
+                        initialIndexes: [1, 29], // this is broken
+                    },
+                },
+                interpolationsIds: ['L1C1', 'L2C1'],
+                rootInterpolationsIds: ['L1C1'],
+                lastLevelInterpolationsIds: ['L2C1'],
+            };
+
+            /** @type {InterpolationsAnalysis} */
+            let actual = AnalysisService.analyze('a{{n|b: {{1, 2}, 3}, d: [], l: {j: {{o|j:{{4, 5}, {8, 0}}}}}}}c');
+
+            expect(stringify(actual, teleJsonConfig)).to.deep.equal(stringify(expected, teleJsonConfig));
+        });
         it('should analyze a simple one with one nested', () => {
             /** @type {InterpolationsAnalysis} */
             let expected = {
