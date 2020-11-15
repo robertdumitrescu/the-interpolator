@@ -126,7 +126,7 @@ class AnalysisService {
      * @author Robert Dumitrescu (LinkedIn: https://www.linkedin.com/in/robertdumitrescu/) (Github: https://github.com/robertdumitrescu)
      * @static
      * @param {String} string - the string that will be analyzed
-     * @returns {InterpolationsAnalysis}
+     * @returns {InterpolationsAnalysis|null}
      * @memberof AnalysisService
      */
     static analyze(string) {
