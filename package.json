@@ -14,7 +14,7 @@
     "method interpolation"
   ],
   "scripts": {
-    "test": "mocha src/interpolator.Spec.js --reporter dot"
+    "test": "mocha src/services/analysis.Service.Spec.js --reporter dot"
   },
   "type": "module",
   "author": {
@@ -41,7 +41,7 @@
   "dependencies": {
     "@thi.ng/intervals": "2.0.10",
     "is-glob": "4.0.1",
-    "lodash": "4.17.15",
+    "lodash": "^4.17.20",
     "lodash.set": "4.3.2",
     "math-expression-evaluator": "1.2.22",
     "object-hash": "2.0.3",
@@ -50,7 +50,7 @@
   "devDependencies": {
     "babel-eslint": "10.1.0",
     "benchmark": "^2.1.4",
-    "c8": "7.1.0",
+    "c8": "^7.3.5",
     "chai": "4.2.0",
     "eslint": "6.8.0",
     "eslint-plugin-import": "2.20.2",
@@ -61,7 +61,7 @@
     "eslint-plugin-sort-imports-es6-autofix": "0.5.0",
     "eslint-plugin-standard": "4.0.1",
     "lodash.get": "4.4.2",
-    "mocha": "8.0.1",
+    "mocha": "^8.2.1",
     "nyc": "^15.1.0",
     "ololog": "1.1.156",
     "prettier": "2.0.5",
